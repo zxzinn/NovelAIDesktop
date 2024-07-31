@@ -25,12 +25,13 @@ NovelAI Generator 是一個強大而靈活的圖像生成工具，專為 NovelAI
    git clone https://github.com/zxzinn/NovelAIDesktop.git
    ```
 2. 使用 Maven 構建項目:
+3. 打包項目
    ```
    mvn clean package
    ```
-3. 運行應用程序:
+4. 運行應用程序:
    ```
-   於 target 目錄下取得產出的Java檔 -NovelAIDesktop-1.0-SNAPSHOT-jar.jar
+   運行於 target 目錄下取得產出的Java檔 -NovelAIDesktop-1.0-SNAPSHOT.jar
    ```
 
 ## 📖 使用指南
