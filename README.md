@@ -2,16 +2,13 @@
 
 NovelAI Generator 是一個強大而靈活的圖像生成工具，專為 NovelAI API 設計。它提供了一個直觀的圖形用戶界面，讓用戶能夠輕鬆地創建和管理 AI 生成的圖像。
 
-<a class="github-button" href="https://github.com/zxzinn/NovelAIDesktop" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true" aria-label="Star zxzinn/NovelAIDesktop on GitHub">Star</a>
-<a class="github-button" href="https://github.com/zxzinn/NovelAIDesktop/fork" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" data-show-count="true" aria-label="Fork zxzinn/NovelAIDesktop on GitHub">Fork</a>
-<a class="github-button" href="https://github.com/zxzinn/NovelAIDesktop/issues" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Issue zxzinn/NovelAIDesktop on GitHub">Issue</a>
-<a class="github-button" href="https://github.com/zxzinn/NovelAIDesktop/discussions" data-color-scheme="no-preference: light; light: light; dark: dark;" data-size="large" aria-label="Discuss zxzinn/NovelAIDesktop on GitHub">Discuss</a>
-[![GitHub stars](https://img.shields.io/github/stars/zxzinn/NovelAIDesktop)](
-[![GitHub issues](https://img.shields.io/github/issues/zxzinn/NovelAIDesktop)](
-[![GitHub license](https://img.shields.io/github/license/zxzinn/NovelAIDesktop)](
-[![GitHub forks](https://img.shields.io/github/forks/zxzinn/NovelAIDesktop)](
-[![GitHub pull-requests](https://img.shields.io/github/issues-pr/
-[![GitHub discussions](https://img.shields.io/github/discussions/zxzinn/NovelAIDesktop)](
+![GitHub Repo stars](https://img.shields.io/github/stars/zxzinn/NovelAIDesktop?style=social)
+![GitHub forks](https://img.shields.io/github/forks/zxzinn/NovelAIDesktop)
+![GitHub License](https://img.shields.io/github/license/zxzinn/NovelAIDesktop)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/zxzinn/NovelAIDesktop)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/zxzinn/NovelAIDesktop)
+[![GitHub discussions](https://img.shields.io/github/discussions/zxzinn/NovelAIDesktop)])
+
 ## 🌟 特色
 
 - 🖼️ 直觀的圖像生成界面
