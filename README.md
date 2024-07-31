@@ -1,4 +1,4 @@
-# NovelAI Generator 🎨🤖
+# NovelAI Desktop 🎨🤖
 
 NovelAI Generator 是一個強大而靈活的圖像生成工具，專為 NovelAI API 設計。它提供了一個直觀的圖形用戶界面，讓用戶能夠輕鬆地創建和管理 AI 生成的圖像。
 
@@ -33,7 +33,7 @@ NovelAI Generator 是一個強大而靈活的圖像生成工具，專為 NovelAI
    ```
 3. 運行應用程序:
    ```
-   於 target 目錄下取得產出的Java檔 -NovelAIDesktop-1.0-SNAPSHOT-jar-with-dependencies.jar
+   於 target 目錄下取得產出的Java檔 -NovelAIDesktop-1.0-SNAPSHOT-jar.jar
    ```
 
 ## 📖 使用指南
@@ -50,7 +50,6 @@ NovelAI Generator 是一個強大而靈活的圖像生成工具，專為 NovelAI
 - Maven (構建工具)
 - Jackson (JSON 處理)
 - Log4j2 (日誌記錄)
-- JUnit (單元測試)
 
 ## 🤝 貢獻
 
