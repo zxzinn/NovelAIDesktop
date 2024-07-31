@@ -1,0 +1,62 @@
+# Application Configuration
+application:
+  name: NovelAI Image Generator
+  version: 1.0.0
+
+# API Configuration
+api:
+  url: https://api.novelai.net/ai/generate-image
+  timeout: 120
+  proxy:
+    host: 127.0.0.1
+    port: 7890
+
+# Image Generation Defaults
+image:
+  width: 832
+  height: 1216
+  scale: 7.0
+  steps: 28
+  samples: 1
+
+# UI Configuration
+ui:
+  window:
+    width: 1024
+    height: 768
+  theme: system
+  font:
+    name: "Arial"
+    size: 12
+  colors:
+    background: "#F0F0F0"
+    foreground: "#000000"
+  panels:
+    prompt:
+      rows: 5
+      columns: 40
+    parameters:
+      columns: 20
+    console:
+      rows: 5
+      columns: 20
+
+# Output Configuration
+output:
+  directory: output
+
+# Logging Configuration
+logging:
+  level: INFO
+  file: logs/app.log
+
+# Internationalization
+i18n:
+  default_language: en_US
+
+# Initialization Configuration
+initialization:
+  directories:
+    - embeds
+    - logs
+    - output
