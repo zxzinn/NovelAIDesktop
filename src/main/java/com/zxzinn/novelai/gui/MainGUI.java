@@ -156,6 +156,8 @@ public class MainGUI extends JFrame {
                 .seed(Long.parseLong(parametersPanel.getSeedField().getText()))
                 .n_samples(Integer.parseInt(parametersPanel.getNSamplesField().getText()))
                 .negative_prompt(negativePrompt)
+                .sm(parametersPanel.getSmeaCheckbox().isSelected())
+                .sm_dyn(parametersPanel.getSmeaDynCheckbox().isSelected())
                 .build();
     }
 
