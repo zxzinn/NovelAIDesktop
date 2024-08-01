@@ -8,6 +8,7 @@ import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class MetadataCleaner {
         for (File file : files) {
             try {
                 clearMetadataForFile(file);
+                clearLSB(file);
             } catch (IOException e) {
                 log.warn("Unable to clear metadata for file: {}. Error: {}", file.getName(), e.getMessage());
                 unprocessedFiles.add(file);
@@ -54,6 +56,32 @@ public class MetadataCleaner {
         }
 
         log.info("Cleared metadata for file: {}", file.getName());
+    }
+
+    private static void clearLSB(File file) throws IOException {
+        BufferedImage image = ImageIO.read(file);
+        if (image == null) {
+            throw new IOException("Unable to read image file: " + file.getName());
+        }
+
+        WritableRaster raster = image.getRaster();
+        int[] pixels = new int[raster.getNumBands()];
+
+        for (int y = 0; y < raster.getHeight(); y++) {
+            for (int x = 0; x < raster.getWidth(); x++) {
+                raster.getPixel(x, y, pixels);
+                for (int i = 0; i < pixels.length; i++) {
+                    pixels[i] = pixels[i] & 0xFE;
+                }
+                raster.setPixel(x, y, pixels);
+            }
+        }
+
+        File cleanedDir = FileUtils.getOrCreateDirectory("cleaned");
+        File outputFile = FileUtils.getFileInDirectory(cleanedDir, file.getName());
+        ImageIO.write(image, "png", outputFile);
+
+        log.info("Cleared LSB data for file: {}", file.getName());
     }
 
     private static String getImageFormatName(File file) throws IOException {
