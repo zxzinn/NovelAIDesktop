@@ -33,6 +33,7 @@
   "error.general": "錯誤：{0}",
   "param.smea": "SMEA",
   "param.smeaDyn": "SMEA 動態",
+  "param.extraNoiseSeed": "額外噪音種子",
   "metadata.error.parsingTextualData": "解析文本數據時出錯：{0}",
   "metadata.noTextualData": "在圖片中未找到文本數據。",
   "metadata.showTextualData": "顯示文本數據",

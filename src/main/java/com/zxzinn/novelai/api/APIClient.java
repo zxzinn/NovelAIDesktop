@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Log4j2
 @RequiredArgsConstructor
-public class APIClient implements NAIRequestHandler {
+public class APIClient {
     private static final ConfigManager config = ConfigManager.getInstance();
 
     private HttpClient directClient;
@@ -91,8 +91,7 @@ public class APIClient implements NAIRequestHandler {
         return sslParams;
     }
 
-    @Override
-    public byte[] sendRequest(NAIGenerate request) throws IOException, InterruptedException {
+    public byte[] sendRequest(NAIRequest request) throws IOException, InterruptedException {
         if (apiKey == null || apiKey.isEmpty()) {
             throw new IllegalStateException(I18nManager.getString("error.nullAPIKey"));
         }
@@ -129,7 +128,7 @@ public class APIClient implements NAIRequestHandler {
         return response.body();
     }
 
-    private String createJsonBody(NAIGenerate request) {
+    private String createJsonBody(NAIRequest request) {
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("input", request.getInput());
         jsonMap.put("model", request.getModel());
@@ -144,6 +143,11 @@ public class APIClient implements NAIRequestHandler {
         parameters.put("seed", request.getSeed());
         parameters.put("n_samples", request.getN_samples());
         parameters.put("negative_prompt", request.getNegative_prompt());
+
+        if (request instanceof NAIImg2Img) {
+            parameters.put("image", ((NAIImg2Img) request).getImage());
+            parameters.put("extra_noise_seed", ((NAIImg2Img) request).getExtra_noise_seed());
+        }
 
         jsonMap.put("parameters", parameters);
 

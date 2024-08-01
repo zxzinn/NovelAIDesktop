@@ -12,7 +12,7 @@ import java.awt.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class ParametersPanel extends JPanel implements StaticInputPanel {
+public class ParametersPanel extends JPanel {
     private static final ConfigManager config = ConfigManager.getInstance();
     private static final Cache cache = Cache.getInstance();
 
@@ -42,7 +42,6 @@ public class ParametersPanel extends JPanel implements StaticInputPanel {
         loadCachedValues();
     }
 
-    @Override
     public void initComponents() {
         int columns = 20;
         // JComboBox
@@ -81,24 +80,6 @@ public class ParametersPanel extends JPanel implements StaticInputPanel {
         smeaDynCheckbox.setSelected(Boolean.parseBoolean(cache.getParameter("smeaDyn", "false")));
     }
 
-    public void saveToCache() {
-        cache.setParameter("model", (String) modelComboBox.getSelectedItem());
-        cache.setParameter("action", (String) actionComboBox.getSelectedItem());
-        cache.setParameter("apiKey", apiKeyField.getText());
-        cache.setParameter("width", widthField.getText());
-        cache.setParameter("height", heightField.getText());
-        cache.setParameter("scale", scaleField.getText());
-        cache.setParameter("sampler", (String) samplerComboBox.getSelectedItem());
-        cache.setParameter("steps", stepsField.getText());
-        cache.setParameter("seed", seedField.getText());
-        cache.setParameter("nSamples", nSamplesField.getText());
-        cache.setParameter("outputDir", outputDirField.getText());
-        cache.setParameter("smea", String.valueOf(smeaCheckbox.isSelected()));
-        cache.setParameter("smeaDyn", String.valueOf(smeaDynCheckbox.isSelected()));
-        cache.saveCache();
-    }
-
-    @Override
     public void layoutComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);

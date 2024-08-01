@@ -9,7 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @Log4j2
-public class PromptPanel extends JPanel implements StaticInputPanel {
+public class PromptPanel extends JPanel {
     private final EmbedProcessor embedProcessor;
     private final Cache cache;
     private JTextArea positivePromptArea;
@@ -24,8 +24,6 @@ public class PromptPanel extends JPanel implements StaticInputPanel {
         loadCachedPrompts();
     }
 
-
-    @Override
     public void initComponents() {
         positivePromptArea = new JTextArea(5, 40);  // 增加列數
         negativePromptArea = new JTextArea(5, 40);  // 增加列數
@@ -36,7 +34,6 @@ public class PromptPanel extends JPanel implements StaticInputPanel {
         negativePromptArea.setWrapStyleWord(true);
     }
 
-    @Override
     public void layoutComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);

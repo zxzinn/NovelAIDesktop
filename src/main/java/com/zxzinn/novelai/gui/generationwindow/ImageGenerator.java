@@ -1,8 +1,7 @@
 package com.zxzinn.novelai.gui.generationwindow;
 
 import com.zxzinn.novelai.api.APIClient;
-import com.zxzinn.novelai.api.NAIGenerate;
-import com.zxzinn.novelai.api.NAIResponseHandler;
+import com.zxzinn.novelai.api.NAIRequest;
 import com.zxzinn.novelai.utils.ImageUtils;
 import com.zxzinn.novelai.utils.I18nManager;
 import lombok.extern.log4j.Log4j2;
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 @Log4j2
-public class ImageGenerator implements NAIResponseHandler {
+public class ImageGenerator {
     private final APIClient apiClient;
     private final ImageUtils imageUtils;
     private final AtomicBoolean isGenerating;
@@ -46,7 +45,7 @@ public class ImageGenerator implements NAIResponseHandler {
         this.onGenerationStopped = onGenerationStopped;
     }
 
-    public void toggleGeneration(NAIGenerate request, String apiKey, int count, String outputDir) {
+    public void toggleGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
         if (isGenerating.get()) {
             requestStop();
         } else {
@@ -54,7 +53,7 @@ public class ImageGenerator implements NAIResponseHandler {
         }
     }
 
-    private void startGeneration(NAIGenerate request, String apiKey, int count, String outputDir) {
+    private void startGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
         if (isGenerating.get()) {
             return; // 防止重複啟動
         }
@@ -83,9 +82,7 @@ public class ImageGenerator implements NAIResponseHandler {
                     break;
                 }
             }
-        }, executorService).whenComplete((result, exception) -> {
-            completeGeneration();
-        });
+        }, executorService).whenComplete((result, exception) -> completeGeneration());
     }
 
     public void requestStop() {
@@ -106,11 +103,6 @@ public class ImageGenerator implements NAIResponseHandler {
         });
     }
 
-    @Override
-    public void handleResponse(byte[] response) {
-        handleResponse(response, null);
-    }
-
     private void handleResponse(byte[] response, String outputDir) {
         try {
             BufferedImage image = imageUtils.getImageFromZip(response);
@@ -129,7 +121,6 @@ public class ImageGenerator implements NAIResponseHandler {
         }
     }
 
-    @Override
     public void handleError(String errorMessage) {
         log.error("錯誤: {}", errorMessage);
         SwingUtilities.invokeLater(() -> {
