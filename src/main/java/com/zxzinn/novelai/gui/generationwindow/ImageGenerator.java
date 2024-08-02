@@ -1,6 +1,6 @@
 package com.zxzinn.novelai.gui.generationwindow;
 
-import com.zxzinn.novelai.api.NAIRequest;
+import com.zxzinn.novelai.api.GenerationRequest;
 import com.zxzinn.novelai.service.ImageGenerationService;
 import com.zxzinn.novelai.utils.I18nManager;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +37,7 @@ public class ImageGenerator {
         this.onGenerationStopped = onGenerationStopped;
     }
 
-    public void toggleGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
+    public void toggleGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
         if (isGenerating.get()) {
             requestStop();
         } else {
@@ -45,7 +45,7 @@ public class ImageGenerator {
         }
     }
 
-    private void startGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
+    private void startGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
         if (isGenerating.get()) {
             return;
         }

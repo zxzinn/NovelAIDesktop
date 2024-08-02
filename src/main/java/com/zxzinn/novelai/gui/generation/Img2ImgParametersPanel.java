@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.gui.generationwindow;
+package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.utils.I18nManager;
@@ -27,8 +27,7 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
     private JCheckBox smeaCheckbox;
     private JCheckBox smeaDynCheckbox;
     private JButton uploadImageButton;
-    @Getter
-    private String base64Image;
+    @Getter private String base64Image;
 
     @Override
     protected void initSpecificComponents() {

@@ -1,9 +1,8 @@
-# Application Configuration
+# 更新配置文件以反映新的包結構
 application:
   name: NovelAI Image Generator
-  version: 1.0.0
+  version: 1.1.0
 
-# API Configuration
 api:
   url: https://api.novelai.net/ai/generate-image
   timeout: 120
@@ -11,7 +10,6 @@ api:
     host: 127.0.0.1
     port: 7890
 
-# Image Generation Defaults
 image:
   width: 832
   height: 1216
@@ -19,44 +17,39 @@ image:
   steps: 28
   samples: 1
 
-# UI Configuration
 ui:
   window:
     width: 1024
     height: 768
   theme: system
-  font:
-    name: "Arial"
-    size: 12
-  colors:
-    background: "#F0F0F0"
-    foreground: "#000000"
-  panels:
-    prompt:
-      rows: 5
-      columns: 40
-    parameters:
-      columns: 20
-    console:
-      rows: 5
-      columns: 20
 
-# Output Configuration
 output:
   directory: output
 
-# Logging Configuration
 logging:
   level: INFO
   file: logs/app.log
 
-# Internationalization
 i18n:
   default_language: en_US
 
-# Initialization Configuration
 initialization:
   directories:
     - embeds
     - logs
     - output
+
+# 新增生成相關的配置
+generation:
+  default_model: nai-diffusion-3
+  default_action: generate
+  max_batch_size: 4
+
+# 包結構調整
+package_structure:
+  generation: com.zxzinn.novelai.generation
+  gui:
+    generation: com.zxzinn.novelai.gui.generation
+  prompt:
+    base: com.zxzinn.novelai.generation.prompt
+    embed: com.zxzinn.novelai.generation.prompt.embed

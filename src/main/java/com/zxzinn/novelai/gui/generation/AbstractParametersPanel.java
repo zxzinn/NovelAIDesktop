@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.gui.generationwindow;
+package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.config.ConfigManager;
@@ -26,7 +26,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     public abstract JTextField getApiKeyField();
     public abstract JTextField getOutputDirField();
-
     public abstract Map<String, Object> getParameters();
 
     public AbstractParametersPanel() {

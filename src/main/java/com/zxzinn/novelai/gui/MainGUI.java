@@ -1,13 +1,13 @@
 package com.zxzinn.novelai.gui;
 
 import com.zxzinn.novelai.api.NAIConstants;
-import com.zxzinn.novelai.api.NAIRequest;
-import com.zxzinn.novelai.api.RequestBuilder;
+import com.zxzinn.novelai.api.GenerationRequest;
+import com.zxzinn.novelai.api.GenerationRequestBuilder;
 import com.zxzinn.novelai.config.ConfigManager;
 import com.zxzinn.novelai.controller.MainController;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
 import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
-import com.zxzinn.novelai.gui.generationwindow.*;
+import com.zxzinn.novelai.gui.generation.*;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
@@ -24,6 +24,7 @@ import java.awt.image.BufferedImage;
 
 @Log4j2
 @Getter
+@Setter
 public class MainGUI extends JFrame implements UIComponent {
     private static final ConfigManager config = ConfigManager.getInstance();
     public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
@@ -47,7 +48,6 @@ public class MainGUI extends JFrame implements UIComponent {
     private JComboBox<String> actionComboBox;
 
     private final Cache cache;
-    @Setter
     private MainController controller;
 
     public MainGUI() {
@@ -218,13 +218,13 @@ public class MainGUI extends JFrame implements UIComponent {
         });
     }
 
-    public NAIRequest buildRequest() {
+    public GenerationRequest buildRequest() {
         String action = (String) actionComboBox.getSelectedItem();
-        return RequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
+        return GenerationRequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
     }
 
     private void onGenerate(int count) {
-        NAIRequest request = buildRequest();
+        GenerationRequest request = buildRequest();
         String apiKey = currentParametersPanel.getApiKeyField().getText();
         String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
         controller.toggleGeneration(request, apiKey, count, outputDir);

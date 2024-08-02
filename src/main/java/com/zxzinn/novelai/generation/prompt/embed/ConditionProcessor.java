@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.processing.embed;
+package com.zxzinn.novelai.generation.prompt.embed;
 
 import lombok.extern.log4j.Log4j2;
 

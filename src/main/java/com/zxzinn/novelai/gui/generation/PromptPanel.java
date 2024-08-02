@@ -1,7 +1,7 @@
-package com.zxzinn.novelai.gui.generationwindow;
+package com.zxzinn.novelai.gui.generation;
 
-import com.zxzinn.novelai.processing.PromptProcessor;
-import com.zxzinn.novelai.processing.EmbedPromptProcessor;
+import com.zxzinn.novelai.generation.prompt.PromptProcessor;
+import com.zxzinn.novelai.generation.prompt.EmbedPromptProcessor;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;

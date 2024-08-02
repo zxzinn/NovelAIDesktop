@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.gui.generationwindow;
+package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
 import com.zxzinn.novelai.utils.UIComponent;

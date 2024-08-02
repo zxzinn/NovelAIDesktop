@@ -35,7 +35,7 @@ public class APIClient implements ApiService {
     }
 
     @Override
-    public byte[] sendRequest(NAIRequest request) throws IOException, InterruptedException {
+    public byte[] sendRequest(GenerationRequest request) throws IOException, InterruptedException {
         if (apiKey == null || apiKey.isEmpty()) {
             throw new IllegalStateException(I18nManager.getString("error.nullAPIKey"));
         }
@@ -72,7 +72,7 @@ public class APIClient implements ApiService {
         return response.body();
     }
 
-    private String createJsonBody(NAIRequest request) {
+    private String createJsonBody(GenerationRequest request) {
         Map<String, Object> jsonMap = new HashMap<>();
         jsonMap.put("input", request.getInput());
         jsonMap.put("model", request.getModel());

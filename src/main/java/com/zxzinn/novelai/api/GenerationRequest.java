@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class NAIRequest {
+public class GenerationRequest {
     private String input;
     private String model;
     private String action;

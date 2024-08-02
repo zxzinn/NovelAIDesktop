@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.processing.embed;
+package com.zxzinn.novelai.generation.prompt.embed;
 
 import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -37,7 +37,8 @@ public class EmbedProcessor {
             EmbedDetector.EmbedTag embed = embeds.get(i);
             try {
                 Map<String, Object> yamlData = yamlLoader.loadYamlFile(embed.name);
-                ConditionProcessor conditionProcessor = new ConditionProcessor((Map<String, Object>) yamlData.get("tagset"));
+                Map<String, Object> tagset = (Map<String, Object>) yamlData.get("tagset");
+                ConditionProcessor conditionProcessor = new ConditionProcessor(tagset);
                 List<String> generatedTags = conditionProcessor.processConditions((String) yamlData.get("condition"));
 
                 if (!generatedTags.isEmpty()) {
@@ -79,4 +80,6 @@ public class EmbedProcessor {
 
         return result;
     }
+
+
 }

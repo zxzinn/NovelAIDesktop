@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.gui;
+package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.utils.I18nManager;
 

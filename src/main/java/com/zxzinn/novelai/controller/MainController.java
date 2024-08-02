@@ -1,9 +1,8 @@
 package com.zxzinn.novelai.controller;
 
-import com.zxzinn.novelai.api.NAIRequest;
+import com.zxzinn.novelai.api.GenerationRequest;
 import com.zxzinn.novelai.gui.MainGUI;
 import com.zxzinn.novelai.gui.generationwindow.ImageGenerator;
-import com.zxzinn.novelai.utils.I18nManager;
 import lombok.extern.log4j.Log4j2;
 
 import java.awt.image.BufferedImage;
@@ -28,7 +27,7 @@ public class MainController {
         );
     }
 
-    public void toggleGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
+    public void toggleGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
         if (imageGenerator.isGenerating()) {
             stopGeneration();
         } else {
@@ -36,7 +35,7 @@ public class MainController {
         }
     }
 
-    private void startGeneration(NAIRequest request, String apiKey, int count, String outputDir) {
+    private void startGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
         mainGUI.updateGenerationControlPanel(true);
         imageGenerator.toggleGeneration(request, apiKey, count, outputDir);
     }

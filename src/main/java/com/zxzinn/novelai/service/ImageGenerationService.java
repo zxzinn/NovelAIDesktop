@@ -2,7 +2,7 @@ package com.zxzinn.novelai.service;
 
 import com.zxzinn.novelai.api.ApiService;
 import com.zxzinn.novelai.api.APIClient;
-import com.zxzinn.novelai.api.NAIRequest;
+import com.zxzinn.novelai.api.GenerationRequest;
 import com.zxzinn.novelai.utils.ImageProcessor;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,7 +26,7 @@ public class ImageGenerationService {
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
-    public CompletableFuture<BufferedImage> generateImage(NAIRequest request, String apiKey) {
+    public CompletableFuture<BufferedImage> generateImage(GenerationRequest request, String apiKey) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 apiService.setApiKey(apiKey);
