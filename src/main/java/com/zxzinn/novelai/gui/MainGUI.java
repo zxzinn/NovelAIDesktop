@@ -78,12 +78,19 @@ public class MainGUI extends JFrame implements UIComponent {
         historyPanel = new HistoryPanel(imagePreviewPanel);
 
         generateButton = new JButton(I18nManager.getString("button.generate"));
+        generateButton.setFont(new Font(generateButton.getFont().getName(), Font.BOLD, 16));
+        generateButton.setBackground(new Color(70, 130, 180));
+        generateButton.setForeground(Color.WHITE);
+        generateButton.setPreferredSize(new Dimension(200, 40));
+        generateButton.setFocusPainted(false);
 
         String[] countOptions = {"1", "2", "3", "4", I18nManager.getString("option.infinite")};
         generationCountComboBox = new JComboBox<>(countOptions);
 
         consoleArea = new JTextArea(5, 20);
         consoleArea.setEditable(false);
+        consoleArea.setLineWrap(true);
+        consoleArea.setWrapStyleWord(true);
 
         fileManagerTab = new FileManagerTab();
 
@@ -108,25 +115,23 @@ public class MainGUI extends JFrame implements UIComponent {
 
         leftPanel.add(parameterPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.add(generateButton, BorderLayout.CENTER);
-        buttonPanel.add(generationCountComboBox, BorderLayout.EAST);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(generateButton);
+        buttonPanel.add(Box.createHorizontalStrut(10));
+        buttonPanel.add(generationCountComboBox);
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         JPanel generatorPanel = new JPanel(new BorderLayout());
         generatorPanel.add(promptPanel, BorderLayout.NORTH);
         generatorPanel.add(new JScrollPane(imagePreviewPanel), BorderLayout.CENTER);
+        generatorPanel.add(historyPanel, BorderLayout.EAST);
 
         JScrollPane consoleScrollPane = new JScrollPane(consoleArea);
-
-        JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(historyPanel, BorderLayout.CENTER);
 
         JPanel mainGeneratorPanel = new JPanel(new BorderLayout());
         mainGeneratorPanel.add(generatorPanel, BorderLayout.CENTER);
         mainGeneratorPanel.add(leftPanel, BorderLayout.WEST);
-        mainGeneratorPanel.add(rightPanel, BorderLayout.EAST);
         mainGeneratorPanel.add(consoleScrollPane, BorderLayout.SOUTH);
 
         mainTabbedPane.addTab(I18nManager.getString("tab.generator"), mainGeneratorPanel);
@@ -150,7 +155,7 @@ public class MainGUI extends JFrame implements UIComponent {
         actionComboBox.setFont(new Font(actionComboBox.getFont().getName(), Font.BOLD, 16));
         actionComboBox.setBackground(new Color(70, 130, 180));
         actionComboBox.setForeground(Color.WHITE);
-        actionComboBox.setPreferredSize(new Dimension(300, 40));
+        actionComboBox.setPreferredSize(new Dimension(200, 40));
         ((JLabel)actionComboBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
     }
 

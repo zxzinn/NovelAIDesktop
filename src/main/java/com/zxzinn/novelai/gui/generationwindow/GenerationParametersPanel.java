@@ -35,20 +35,41 @@ public class GenerationParametersPanel extends AbstractParametersPanel {
     @Override
     protected void layoutSpecificComponents(GridBagConstraints gbc, int startGridy) {
         int gridy = startGridy;
-        addComponentWithLabel(I18nManager.getString("param.width"), widthField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.height"), heightField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.scale"), scaleField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.sampler"), samplerComboBox, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.steps"), stepsField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.seed"), seedField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.n_samples"), nSamplesField, gbc, gridy++);
 
-        JPanel checkboxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        checkboxPanel.add(smeaCheckbox);
-        checkboxPanel.add(smeaDynCheckbox);
+        JPanel imageSettingsPanel = createTitledPanel("Image Settings");
+        addComponentWithLabel(I18nManager.getString("param.width"), widthField, imageSettingsPanel);
+        addComponentWithLabel(I18nManager.getString("param.height"), heightField, imageSettingsPanel);
+        addComponentWithLabel(I18nManager.getString("param.scale"), scaleField, imageSettingsPanel);
+        addComponentWithLabel(I18nManager.getString("param.n_samples"), nSamplesField, imageSettingsPanel);
+
+        gbc.gridy = gridy++;
         gbc.gridwidth = 2;
-        gbc.gridy = gridy;
-        add(checkboxPanel, gbc);
+        add(imageSettingsPanel, gbc);
+
+        JPanel samplingSettingsPanel = createTitledPanel("Sampling Settings");
+        addComponentWithLabel(I18nManager.getString("param.sampler"), samplerComboBox, samplingSettingsPanel);
+        addComponentWithLabel(I18nManager.getString("param.steps"), stepsField, samplingSettingsPanel);
+        addComponentWithLabel(I18nManager.getString("param.seed"), seedField, samplingSettingsPanel);
+        samplingSettingsPanel.add(smeaCheckbox);
+        samplingSettingsPanel.add(smeaDynCheckbox);
+
+        gbc.gridy = gridy++;
+        add(samplingSettingsPanel, gbc);
+    }
+
+    private void addComponentWithLabel(String labelText, JComponent component, JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        panel.add(new JLabel(labelText), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        panel.add(component, gbc);
     }
 
     @Override

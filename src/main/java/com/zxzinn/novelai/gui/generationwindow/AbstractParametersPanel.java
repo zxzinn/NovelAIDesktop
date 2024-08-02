@@ -20,12 +20,14 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     protected JComboBox<String> modelComboBox;
     protected JTextField apiKeyField;
     protected JTextField outputDirField;
+    protected JButton apiKeyHelpButton;
+    protected JButton outputDirHelpButton;
+    protected JButton outputDirBrowseButton;
 
     public abstract JTextField getApiKeyField();
     public abstract JTextField getOutputDirField();
 
     public abstract Map<String, Object> getParameters();
-
 
     public AbstractParametersPanel() {
         setLayout(new GridBagLayout());
@@ -43,6 +45,11 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
         modelComboBox = new JComboBox<>(NAIConstants.MODELS);
         apiKeyField = new JTextField(20);
         outputDirField = new JTextField(20);
+
+        apiKeyHelpButton = createHelpButton("tooltip.apiKey");
+        outputDirHelpButton = createHelpButton("tooltip.outputDir");
+        outputDirBrowseButton = createBrowseButton(outputDirField);
+
         initSpecificComponents();
     }
 
@@ -50,17 +57,27 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     @Override
     public void layoutComponents() {
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridwidth = 2;
         gbc.weightx = 1.0;
 
         int gridy = 0;
-        addComponentWithLabel(I18nManager.getString("param.apiKey"), apiKeyField, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.model"), modelComboBox, gbc, gridy++);
-        addComponentWithLabel(I18nManager.getString("param.outputDir"), outputDirField, gbc, gridy++);
+
+        JPanel apiPanel = createTitledPanel("API Settings");
+        addComponentWithLabel(I18nManager.getString("param.apiKey"), apiKeyField, apiKeyHelpButton, apiPanel);
+        addComponentWithLabel(I18nManager.getString("param.model"), modelComboBox, null, apiPanel);
+        gbc.gridx = 0;
+        gbc.gridy = gridy++;
+        gbc.gridwidth = 2;
+        add(apiPanel, gbc);
+
+        JPanel outputPanel = createTitledPanel("Output Settings");
+        addComponentWithLabel(I18nManager.getString("param.outputDir"), outputDirField, outputDirHelpButton, outputDirBrowseButton, outputPanel);
+        gbc.gridy = gridy++;
+        add(outputPanel, gbc);
 
         layoutSpecificComponents(gbc, gridy);
     }
@@ -108,5 +125,95 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
         gbc.gridx = 1;
         gbc.weightx = 0.7;
         add(component, gbc);
+    }
+
+    protected JButton createHelpButton(String tooltipKey) {
+        JButton helpButton = new JButton("?");
+        helpButton.setToolTipText(I18nManager.getString(tooltipKey));
+        helpButton.setMargin(new Insets(0, 0, 0, 0));
+        helpButton.setFocusPainted(false);
+        helpButton.setPreferredSize(new Dimension(20, 20));
+        return helpButton;
+    }
+
+    protected JButton createBrowseButton(JTextField textField) {
+        JButton browseButton = new JButton("...");
+        browseButton.setMargin(new Insets(0, 0, 0, 0));
+        browseButton.setFocusPainted(false);
+        browseButton.setPreferredSize(new Dimension(20, 20));
+        browseButton.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int result = fileChooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+            }
+        });
+        return browseButton;
+    }
+
+    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, GridBagConstraints gbc, int y) {
+        gbc.gridy = y;
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        add(new JLabel(labelText), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        add(component, gbc);
+
+        if (helpButton != null) {
+            gbc.gridx = 2;
+            gbc.weightx = 0.0;
+            add(helpButton, gbc);
+        }
+    }
+
+    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JComponent browseButton, GridBagConstraints gbc, int y) {
+        addComponentWithLabel(labelText, component, helpButton, gbc, y);
+        if (browseButton != null) {
+            gbc.gridx = 3;
+            gbc.weightx = 0.0;
+            add(browseButton, gbc);
+        }
+    }
+
+    JPanel createTitledPanel(String title) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createTitledBorder(title));
+        return panel;
+    }
+
+    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JPanel panel) {
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        gbc.gridx = 0;
+        gbc.weightx = 0.0;
+        panel.add(new JLabel(labelText), gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        panel.add(component, gbc);
+
+        if (helpButton != null) {
+            gbc.gridx = 2;
+            gbc.weightx = 0.0;
+            panel.add(helpButton, gbc);
+        }
+    }
+
+    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JComponent browseButton, JPanel panel) {
+        addComponentWithLabel(labelText, component, helpButton, panel);
+        if (browseButton != null) {
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.gridx = 3;
+            gbc.weightx = 0.0;
+            panel.add(browseButton, gbc);
+        }
     }
 }

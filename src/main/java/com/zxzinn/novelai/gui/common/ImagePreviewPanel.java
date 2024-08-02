@@ -1,5 +1,6 @@
 package com.zxzinn.novelai.gui.common;
 
+import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
 import lombok.extern.log4j.Log4j2;
 
@@ -19,6 +20,9 @@ public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheel
     private int translateY = 0;
     private Point lastPoint;
 
+    private JButton fitButton;
+    private JButton originalSizeButton;
+
     public ImagePreviewPanel() {
         initializeComponents();
         layoutComponents();
@@ -28,11 +32,25 @@ public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheel
     @Override
     public void initializeComponents() {
         setBackground(Color.DARK_GRAY);
+
+        fitButton = new JButton(I18nManager.getString("button.fit"));
+        fitButton.setFocusPainted(false);
+
+        originalSizeButton = new JButton(I18nManager.getString("button.originalSize"));
+        originalSizeButton.setFocusPainted(false);
     }
 
     @Override
     public void layoutComponents() {
         setLayout(new BorderLayout());
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(Color.DARK_GRAY);
+        buttonPanel.add(Box.createHorizontalGlue());
+        buttonPanel.add(fitButton);
+        buttonPanel.add(originalSizeButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     @Override
@@ -40,6 +58,29 @@ public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheel
         addMouseWheelListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
+
+        fitButton.addActionListener(e -> fitToPanel());
+        originalSizeButton.addActionListener(e -> setOriginalSize());
+    }
+
+    private void setOriginalSize() {
+        if (image != null) {
+            scale = 1.0;
+            translateX = (getWidth() - image.getWidth()) / 2;
+            translateY = (getHeight() - image.getHeight()) / 2;
+            repaint();
+        }
+    }
+
+    public void fitToPanel() {
+        if (image != null) {
+            double scaleX = (double) getWidth() / image.getWidth();
+            double scaleY = (double) getHeight() / image.getHeight();
+            scale = Math.min(scaleX, scaleY);
+            translateX = (int) ((getWidth() - image.getWidth() * scale) / 2);
+            translateY = (int) ((getHeight() - image.getHeight() * scale) / 2);
+            repaint();
+        }
     }
 
     @Override
@@ -151,17 +192,6 @@ public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheel
 
     @Override
     public void mouseMoved(MouseEvent e) {}
-
-    public void fitToPanel() {
-        if (image != null) {
-            double scaleX = (double) getWidth() / image.getWidth();
-            double scaleY = (double) getHeight() / image.getHeight();
-            scale = Math.min(scaleX, scaleY);
-            translateX = 0;
-            translateY = 0;
-            repaint();
-        }
-    }
 
     public void setScale(double scale) {
         this.scale = scale;

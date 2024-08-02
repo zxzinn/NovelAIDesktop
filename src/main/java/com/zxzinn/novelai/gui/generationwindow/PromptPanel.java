@@ -36,6 +36,13 @@ public class PromptPanel extends JPanel implements UIComponent {
         positivePromptArea.setWrapStyleWord(true);
         negativePromptArea.setLineWrap(true);
         negativePromptArea.setWrapStyleWord(true);
+
+        positivePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.positive")));
+        negativePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.negative")));
+
+        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+        positivePromptArea.setFont(font);
+        negativePromptArea.setFont(font);
     }
 
     @Override
@@ -48,18 +55,9 @@ public class PromptPanel extends JPanel implements UIComponent {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(new JLabel(I18nManager.getString("prompt.positive")), gbc);
-
-        gbc.gridy = 1;
-        gbc.weighty = 1.0;
         add(new JScrollPane(positivePromptArea), gbc);
 
-        gbc.gridy = 2;
-        gbc.weighty = 0.0;
-        add(new JLabel(I18nManager.getString("prompt.negative")), gbc);
-
-        gbc.gridy = 3;
-        gbc.weighty = 1.0;
+        gbc.gridy = 1;
         add(new JScrollPane(negativePromptArea), gbc);
     }
 
