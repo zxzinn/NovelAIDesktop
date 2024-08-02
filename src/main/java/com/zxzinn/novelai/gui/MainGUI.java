@@ -220,7 +220,9 @@ public class MainGUI extends JFrame implements UIComponent {
 
     public GenerationRequest buildRequest() {
         String action = (String) actionComboBox.getSelectedItem();
-        return GenerationRequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
+        String positivePrompt = promptPanel.getPositivePrompt();
+        String negativePrompt = promptPanel.getNegativePrompt();
+        return GenerationRequestBuilder.buildRequest(action, positivePrompt, negativePrompt, currentParametersPanel);
     }
 
     private void onGenerate(int count) {

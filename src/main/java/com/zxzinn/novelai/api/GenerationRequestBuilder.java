@@ -6,9 +6,7 @@ import com.zxzinn.novelai.gui.generation.PromptPanel;
 import java.util.Map;
 
 public class GenerationRequestBuilder {
-    public static GenerationRequest buildRequest(String action, PromptPanel promptPanel, AbstractParametersPanel parametersPanel) {
-        String positivePrompt = promptPanel.getPositivePrompt();
-        String negativePrompt = promptPanel.getNegativePrompt();
+    public static GenerationRequest buildRequest(String action, String positivePrompt, String negativePrompt, AbstractParametersPanel parametersPanel) {
         Map<String, Object> params = parametersPanel.getParameters();
 
         GenerationRequest.GenerationRequestBuilder builder = GenerationRequest.builder()

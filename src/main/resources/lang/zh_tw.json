@@ -42,5 +42,10 @@
   "metadata.clearButton": "清除元數據",
   "tab.metadata": "元數據",
   "fileManager.clearMetadata": "Clear Metadata",
-  "fileManager.constructDatabase": "Construct Database"
+  "fileManager.constructDatabase": "Construct Database",
+  "prompt.positivePreview": "正面提示詞預覽",
+  "prompt.negativePreview": "負面提示詞預覽",
+  "button.refreshPositive": "刷新正面預覽",
+  "button.refreshNegative": "刷新負面預覽",
+  "button.togglePreviewMode": "切換預覽模式"
 }
