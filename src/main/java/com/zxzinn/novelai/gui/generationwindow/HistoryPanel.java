@@ -1,6 +1,7 @@
 package com.zxzinn.novelai.gui.generationwindow;
 
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
+import com.zxzinn.novelai.utils.UIComponent;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
@@ -8,7 +9,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @Log4j2
-public class HistoryPanel extends JPanel {
+public class HistoryPanel extends JPanel implements UIComponent {
     private final JPanel thumbnailPanel;
     private final ImagePreviewPanel imagePreviewPanel;
     private static final int THUMBNAIL_WIDTH = 100;
@@ -16,16 +17,36 @@ public class HistoryPanel extends JPanel {
 
     public HistoryPanel(ImagePreviewPanel imagePreviewPanel) {
         this.imagePreviewPanel = imagePreviewPanel;
-        setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(PANEL_WIDTH, 0));
-
         thumbnailPanel = new JPanel();
-        thumbnailPanel.setLayout(new BoxLayout(thumbnailPanel, BoxLayout.Y_AXIS));
 
+        initializeComponents();
+        layoutComponents();
+        bindEvents();
+    }
+
+    @Override
+    public void initializeComponents() {
+        setPreferredSize(new Dimension(PANEL_WIDTH, 0));
+        thumbnailPanel.setLayout(new BoxLayout(thumbnailPanel, BoxLayout.Y_AXIS));
+    }
+
+    @Override
+    public void layoutComponents() {
+        setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(thumbnailPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void bindEvents() {
+        // No specific events to bind in this panel
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 
     public void addImage(BufferedImage image) {

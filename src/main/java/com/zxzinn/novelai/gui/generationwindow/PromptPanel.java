@@ -3,13 +3,14 @@ package com.zxzinn.novelai.gui.generationwindow;
 import com.zxzinn.novelai.processing.embed.EmbedProcessor;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
+import com.zxzinn.novelai.utils.UIComponent;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
 import java.awt.*;
 
 @Log4j2
-public class PromptPanel extends JPanel {
+public class PromptPanel extends JPanel implements UIComponent {
     private final EmbedProcessor embedProcessor;
     private final Cache cache;
     private JTextArea positivePromptArea;
@@ -17,16 +18,19 @@ public class PromptPanel extends JPanel {
 
     public PromptPanel() {
         setLayout(new GridBagLayout());
-        initComponents();
-        layoutComponents();
         embedProcessor = new EmbedProcessor();
         cache = Cache.getInstance();
+
+        initializeComponents();
+        layoutComponents();
+        bindEvents();
         loadCachedPrompts();
     }
 
-    public void initComponents() {
-        positivePromptArea = new JTextArea(5, 40);  // 增加列數
-        negativePromptArea = new JTextArea(5, 40);  // 增加列數
+    @Override
+    public void initializeComponents() {
+        positivePromptArea = new JTextArea(5, 40);
+        negativePromptArea = new JTextArea(5, 40);
 
         positivePromptArea.setLineWrap(true);
         positivePromptArea.setWrapStyleWord(true);
@@ -34,6 +38,7 @@ public class PromptPanel extends JPanel {
         negativePromptArea.setWrapStyleWord(true);
     }
 
+    @Override
     public void layoutComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -56,6 +61,16 @@ public class PromptPanel extends JPanel {
         gbc.gridy = 3;
         gbc.weighty = 1.0;
         add(new JScrollPane(negativePromptArea), gbc);
+    }
+
+    @Override
+    public void bindEvents() {
+        // No events to bind in this panel
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 
     public String getPositivePrompt() {
@@ -84,6 +99,4 @@ public class PromptPanel extends JPanel {
         cache.setPrompt("negative", negativePromptArea.getText());
         cache.saveCache();
     }
-
-
 }

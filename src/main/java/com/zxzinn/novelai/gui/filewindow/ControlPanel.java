@@ -1,29 +1,29 @@
 package com.zxzinn.novelai.gui.filewindow;
 
 import com.zxzinn.novelai.utils.I18nManager;
-import lombok.Getter;
+import com.zxzinn.novelai.utils.UIComponent;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ControlPanel extends JPanel {
+public class ControlPanel extends JPanel implements UIComponent {
     private JTextField pathField;
     private JButton addPathButton;
     private JButton removePathButton;
-    @Getter
     private JButton clearMetadataButton;
-    @Getter
     private JButton constructDatabaseButton;
     private final FileManagerTab fileManagerTab;
 
     public ControlPanel(FileManagerTab fileManagerTab) {
         this.fileManagerTab = fileManagerTab;
-        setLayout(new GridBagLayout());
-        initComponents();
+
+        initializeComponents();
         layoutComponents();
+        bindEvents();
     }
 
-    private void initComponents() {
+    @Override
+    public void initializeComponents() {
         pathField = new JTextField(15);
         addPathButton = new JButton("+");
         addPathButton.setToolTipText(I18nManager.getString("fileManager.addPath"));
@@ -31,14 +31,11 @@ public class ControlPanel extends JPanel {
         removePathButton.setToolTipText(I18nManager.getString("fileManager.removePath"));
         clearMetadataButton = new JButton(I18nManager.getString("fileManager.clearMetadata"));
         constructDatabaseButton = new JButton(I18nManager.getString("fileManager.constructDatabase"));
-
-        addPathButton.addActionListener(e -> fileManagerTab.addPath(pathField.getText().trim()));
-        removePathButton.addActionListener(e -> fileManagerTab.removePath());
-        clearMetadataButton.addActionListener(e -> fileManagerTab.clearMetadata());
-        constructDatabaseButton.addActionListener(e -> fileManagerTab.constructDatabase());
     }
 
-    private void layoutComponents() {
+    @Override
+    public void layoutComponents() {
+        setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -66,4 +63,16 @@ public class ControlPanel extends JPanel {
         add(constructDatabaseButton, gbc);
     }
 
+    @Override
+    public void bindEvents() {
+        addPathButton.addActionListener(e -> fileManagerTab.addPath(pathField.getText().trim()));
+        removePathButton.addActionListener(e -> fileManagerTab.removePath());
+        clearMetadataButton.addActionListener(e -> fileManagerTab.clearMetadata());
+        constructDatabaseButton.addActionListener(e -> fileManagerTab.constructDatabase());
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
+    }
 }

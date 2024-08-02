@@ -1,5 +1,6 @@
 package com.zxzinn.novelai.gui.common;
 
+import com.zxzinn.novelai.utils.UIComponent;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
@@ -11,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Log4j2
-public class ImagePreviewPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
+public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheelListener, MouseListener, MouseMotionListener {
     private BufferedImage image;
     private double scale = 1.0;
     private int translateX = 0;
@@ -19,11 +20,31 @@ public class ImagePreviewPanel extends JPanel implements MouseWheelListener, Mou
     private Point lastPoint;
 
     public ImagePreviewPanel() {
-        setLayout(new BorderLayout());
+        initializeComponents();
+        layoutComponents();
+        bindEvents();
+    }
+
+    @Override
+    public void initializeComponents() {
         setBackground(Color.DARK_GRAY);
+    }
+
+    @Override
+    public void layoutComponents() {
+        setLayout(new BorderLayout());
+    }
+
+    @Override
+    public void bindEvents() {
         addMouseWheelListener(this);
         addMouseListener(this);
         addMouseMotionListener(this);
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
     }
 
     public void setImage(BufferedImage image) {

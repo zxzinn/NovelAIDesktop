@@ -1,17 +1,15 @@
 package com.zxzinn.novelai.gui;
 
-import com.zxzinn.novelai.api.*;
+import com.zxzinn.novelai.api.NAIConstants;
+import com.zxzinn.novelai.api.NAIRequest;
+import com.zxzinn.novelai.api.RequestBuilder;
 import com.zxzinn.novelai.config.ConfigManager;
-import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
-import com.zxzinn.novelai.gui.generationwindow.HistoryPanel;
-import com.zxzinn.novelai.gui.generationwindow.ImageGenerator;
-import com.zxzinn.novelai.gui.generationwindow.AbstractParametersPanel;
-import com.zxzinn.novelai.gui.generationwindow.GenerationParametersPanel;
-import com.zxzinn.novelai.gui.generationwindow.Img2ImgParametersPanel;
-import com.zxzinn.novelai.gui.generationwindow.PromptPanel;
+import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
+import com.zxzinn.novelai.gui.generationwindow.*;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
+import com.zxzinn.novelai.utils.UIComponent;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,24 +21,27 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 @Log4j2
-public class MainGUI extends JFrame {
+public class MainGUI extends JFrame implements UIComponent {
     private static final ConfigManager config = ConfigManager.getInstance();
     public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
     public static final int WINDOW_HEIGHT = config.getInteger("ui.window.height");
 
     private JTabbedPane mainTabbedPane;
-    @Getter private PromptPanel promptPanel;
-    @Getter private AbstractParametersPanel currentParametersPanel;
+    private PromptPanel promptPanel;
+    @Getter
+    private AbstractParametersPanel currentParametersPanel;
     private GenerationParametersPanel generationParametersPanel;
     private Img2ImgParametersPanel img2ImgParametersPanel;
-    @Getter private ImagePreviewPanel imagePreviewPanel;
+    private ImagePreviewPanel imagePreviewPanel;
     private HistoryPanel historyPanel;
-    @Getter private JButton generateButton;
-    @Getter private JComboBox<String> generationCountComboBox;
-    @Getter private JTextArea consoleArea;
-    @Getter private FileManagerTab fileManagerTab;
+    @Getter
+    private JButton generateButton;
+    @Getter
+    private JComboBox<String> generationCountComboBox;
+    private JTextArea consoleArea;
+    private FileManagerTab fileManagerTab;
 
-    @Getter private final ImageGenerator imageGenerator;
+    private final ImageGenerator imageGenerator;
     private final Cache cache;
 
     private JPanel leftPanel;
@@ -51,26 +52,28 @@ public class MainGUI extends JFrame {
 
     public MainGUI(ImageGenerator imageGenerator) {
         this.imageGenerator = imageGenerator;
+        this.cache = Cache.getInstance();
+
         setTitle(config.getString("application.name") + " v" + config.getString("application.version"));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocationRelativeTo(null);
 
-        cache = Cache.getInstance();
-
-        initComponents();
+        initializeComponents();
         layoutComponents();
+        bindEvents();
         setupWindowListener();
 
         log.info("MainGUI initialized");
     }
 
-    private void initComponents() {
+    @Override
+    public void initializeComponents() {
         mainTabbedPane = new JTabbedPane();
         promptPanel = new PromptPanel();
         generationParametersPanel = new GenerationParametersPanel();
         img2ImgParametersPanel = new Img2ImgParametersPanel();
-        currentParametersPanel = generationParametersPanel; // Default to generation panel
+        currentParametersPanel = generationParametersPanel;
         imagePreviewPanel = new ImagePreviewPanel();
         historyPanel = new HistoryPanel(imagePreviewPanel);
 
@@ -93,30 +96,16 @@ public class MainGUI extends JFrame {
 
         actionComboBox = new JComboBox<>(NAIConstants.ACTIONS);
         styleActionComboBox();
-        setupActionComboBoxListener();
     }
 
-    private void styleActionComboBox() {
-        actionComboBox.setFont(new Font(actionComboBox.getFont().getName(), Font.BOLD, 16));
-        actionComboBox.setBackground(new Color(70, 130, 180)); // Steel Blue
-        actionComboBox.setForeground(Color.WHITE);
-        actionComboBox.setPreferredSize(new Dimension(300, 40));
-        ((JLabel)actionComboBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-    }
-
-    private void setupActionComboBoxListener() {
-        actionComboBox.addActionListener(e -> updateParametersPanel());
-    }
-
-    private void layoutComponents() {
+    @Override
+    public void layoutComponents() {
         setLayout(new BorderLayout());
 
-        // Parameter panel layout
         parameterPanel.add(actionComboBox, BorderLayout.NORTH);
         parameterPanel.add(cardPanel, BorderLayout.CENTER);
         parameterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Left panel layout
         leftPanel.add(parameterPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new BorderLayout());
@@ -125,7 +114,6 @@ public class MainGUI extends JFrame {
         buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Main layout
         JPanel generatorPanel = new JPanel(new BorderLayout());
         generatorPanel.add(promptPanel, BorderLayout.NORTH);
         generatorPanel.add(new JScrollPane(imagePreviewPanel), BorderLayout.CENTER);
@@ -145,6 +133,25 @@ public class MainGUI extends JFrame {
         mainTabbedPane.addTab(I18nManager.getString("tab.fileManager"), fileManagerTab);
 
         add(mainTabbedPane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void bindEvents() {
+        actionComboBox.addActionListener(e -> updateParametersPanel());
+        generateButton.addActionListener(e -> toggleGeneration());
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return (JComponent) getContentPane();
+    }
+
+    private void styleActionComboBox() {
+        actionComboBox.setFont(new Font(actionComboBox.getFont().getName(), Font.BOLD, 16));
+        actionComboBox.setBackground(new Color(70, 130, 180));
+        actionComboBox.setForeground(Color.WHITE);
+        actionComboBox.setPreferredSize(new Dimension(300, 40));
+        ((JLabel)actionComboBox.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void updateParametersPanel() {
@@ -228,4 +235,31 @@ public class MainGUI extends JFrame {
         return RequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
     }
 
+    private void toggleGeneration() {
+        if (imageGenerator.isGenerating()) {
+            generateButton.setEnabled(false);
+            generateButton.setText(I18nManager.getString("button.stopping"));
+            imageGenerator.requestStop();
+        } else {
+            generateButton.setText(I18nManager.getString("button.stop"));
+            String countSelection = (String) generationCountComboBox.getSelectedItem();
+            assert countSelection != null;
+            int count = countSelection.equals(I18nManager.getString("option.infinite")) ? Integer.MAX_VALUE : Integer.parseInt(countSelection);
+
+            NAIRequest request = buildRequest();
+            String apiKey = currentParametersPanel.getApiKeyField().getText();
+            String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
+
+            imageGenerator.toggleGeneration(request, apiKey, count, outputDir);
+        }
+    }
+
+    // Make these methods public
+    public void loadCachedValues() {
+        currentParametersPanel.loadCachedValues();
+    }
+
+    public void saveToCache() {
+        currentParametersPanel.saveToCache();
+    }
 }

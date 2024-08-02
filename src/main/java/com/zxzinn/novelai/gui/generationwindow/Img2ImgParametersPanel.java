@@ -15,7 +15,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-@Getter
 public class Img2ImgParametersPanel extends AbstractParametersPanel {
     private JTextField widthField;
     private JTextField heightField;
@@ -27,18 +26,12 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
     private JTextField extraNoiseSeedField;
     private JCheckBox smeaCheckbox;
     private JCheckBox smeaDynCheckbox;
-    @Getter private JButton uploadImageButton;
+    private JButton uploadImageButton;
     @Getter
     private String base64Image;
 
-    public Img2ImgParametersPanel() {
-        super();
-        initComponents();
-        layoutComponents();
-        loadCachedValues();
-    }
-
-    private void initComponents() {
+    @Override
+    protected void initSpecificComponents() {
         widthField = new JTextField(20);
         heightField = new JTextField(20);
         scaleField = new JTextField(20);
@@ -50,18 +43,11 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
         smeaCheckbox = new JCheckBox("SMEA");
         smeaDynCheckbox = new JCheckBox("SMEA DYN");
         uploadImageButton = new JButton(I18nManager.getString("button.uploadImage"));
-        uploadImageButton.addActionListener(e -> uploadImage());
     }
 
-    private void layoutComponents() {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-
-        int gridy = 3; // Start after common components
+    @Override
+    protected void layoutSpecificComponents(GridBagConstraints gbc, int startGridy) {
+        int gridy = startGridy;
         addComponentWithLabel(I18nManager.getString("param.width"), widthField, gbc, gridy++);
         addComponentWithLabel(I18nManager.getString("param.height"), heightField, gbc, gridy++);
         addComponentWithLabel(I18nManager.getString("param.scale"), scaleField, gbc, gridy++);
@@ -83,8 +69,12 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
     }
 
     @Override
-    public void loadCachedValues() {
-        super.loadCommonCachedValues();
+    protected void bindSpecificEvents() {
+        uploadImageButton.addActionListener(e -> uploadImage());
+    }
+
+    @Override
+    protected void loadSpecificCachedValues() {
         widthField.setText(cache.getParameter("img2img.width", String.valueOf(config.getInteger("image.width"))));
         heightField.setText(cache.getParameter("img2img.height", String.valueOf(config.getInteger("image.height"))));
         scaleField.setText(cache.getParameter("img2img.scale", String.valueOf(config.getDouble("image.scale"))));
@@ -98,8 +88,7 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
     }
 
     @Override
-    public void saveToCache() {
-        super.saveCommonToCache();
+    protected void saveSpecificToCache() {
         cache.setParameter("img2img.width", widthField.getText());
         cache.setParameter("img2img.height", heightField.getText());
         cache.setParameter("img2img.scale", scaleField.getText());
@@ -110,7 +99,24 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
         cache.setParameter("img2img.extraNoiseSeed", extraNoiseSeedField.getText());
         cache.setParameter("img2img.smea", String.valueOf(smeaCheckbox.isSelected()));
         cache.setParameter("img2img.smeaDyn", String.valueOf(smeaDynCheckbox.isSelected()));
-        cache.saveCache();
+    }
+
+    @Override
+    public Map<String, Object> getParameters() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("model", modelComboBox.getSelectedItem());
+        params.put("width", Integer.parseInt(widthField.getText()));
+        params.put("height", Integer.parseInt(heightField.getText()));
+        params.put("scale", Double.parseDouble(scaleField.getText()));
+        params.put("sampler", samplerComboBox.getSelectedItem());
+        params.put("steps", Integer.parseInt(stepsField.getText()));
+        params.put("seed", Long.parseLong(seedField.getText()));
+        params.put("n_samples", Integer.parseInt(nSamplesField.getText()));
+        params.put("sm", smeaCheckbox.isSelected());
+        params.put("sm_dyn", smeaDynCheckbox.isSelected());
+        params.put("extra_noise_seed", Long.parseLong(extraNoiseSeedField.getText()));
+        params.put("image", getBase64Image());
+        return params;
     }
 
     private void uploadImage() {
@@ -133,20 +139,13 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
     }
 
     @Override
-    public Map<String, Object> getParameters() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("model", modelComboBox.getSelectedItem());
-        params.put("width", Integer.parseInt(widthField.getText()));
-        params.put("height", Integer.parseInt(heightField.getText()));
-        params.put("scale", Double.parseDouble(scaleField.getText()));
-        params.put("sampler", samplerComboBox.getSelectedItem());
-        params.put("steps", Integer.parseInt(stepsField.getText()));
-        params.put("seed", Long.parseLong(seedField.getText()));
-        params.put("n_samples", Integer.parseInt(nSamplesField.getText()));
-        params.put("sm", smeaCheckbox.isSelected());
-        params.put("sm_dyn", smeaDynCheckbox.isSelected());
-        params.put("extra_noise_seed", Long.parseLong(extraNoiseSeedField.getText()));
-        params.put("image", getBase64Image());
-        return params;
+    public JTextField getApiKeyField() {
+        return apiKeyField;
     }
+
+    @Override
+    public JTextField getOutputDirField() {
+        return outputDirField;
+    }
+
 }

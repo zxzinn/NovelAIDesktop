@@ -1,14 +1,13 @@
 package com.zxzinn.novelai.gui.filewindow;
 
-import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
-import com.zxzinn.novelai.utils.Cache;
-import com.zxzinn.novelai.utils.DatabaseConstructor;
-import com.zxzinn.novelai.utils.I18nManager;
-import com.zxzinn.novelai.utils.MetadataCleaner;
+import com.zxzinn.novelai.utils.*;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
+
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,40 +17,36 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class FileManagerTab extends JPanel {
-    private final FileTree fileTree;
-    private final FilePreviewPanel filePreviewPanel;
-    private final MetadataDisplayPanel metadataDisplayPanel;
-    private final ControlPanel controlPanel;
-    private final FileWatcher fileWatcher;
-    private final Cache cache;
+public class FileManagerTab extends JPanel implements UIComponent {
+    private FileTree fileTree;
+    private FilePreviewPanel filePreviewPanel;
+    private MetadataDisplayPanel metadataDisplayPanel;
+    private ControlPanel controlPanel;
+    private FileWatcher fileWatcher;
+    private Cache cache;
 
     public FileManagerTab() {
-        setLayout(new BorderLayout());
+        cache = Cache.getInstance();
 
+        initializeComponents();
+        layoutComponents();
+        bindEvents();
+        loadWatchedFolders();
+    }
+
+    @Override
+    public void initializeComponents() {
         fileTree = new FileTree();
         filePreviewPanel = new FilePreviewPanel();
         metadataDisplayPanel = new MetadataDisplayPanel();
         controlPanel = new ControlPanel(this);
         fileWatcher = new FileWatcher(this::onFileChanged);
-        cache = Cache.getInstance();
-
-        initComponents();
-        layoutComponents();
-        loadWatchedFolders();
     }
 
-    private void initComponents() {
-        fileTree.addTreeSelectionListener(e -> {
-            File selectedFile = fileTree.getSelectedFile();
-            if (selectedFile != null && selectedFile.isFile()) {
-                filePreviewPanel.previewFile(selectedFile);
-                metadataDisplayPanel.displayMetadata(selectedFile);
-            }
-        });
-    }
+    @Override
+    public void layoutComponents() {
+        setLayout(new BorderLayout());
 
-    private void layoutComponents() {
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(controlPanel, BorderLayout.NORTH);
         leftPanel.add(new JScrollPane(fileTree), BorderLayout.CENTER);
@@ -65,8 +60,8 @@ public class FileManagerTab extends JPanel {
 
         add(mainSplitPane, BorderLayout.CENTER);
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
+        addComponentListener(new ComponentAdapter() {
+            public void componentResized(ComponentEvent evt) {
                 int totalWidth = getWidth();
                 int leftPanelWidth = (int)(totalWidth * 0.2);
                 leftPanel.setPreferredSize(new Dimension(leftPanelWidth, 0));
@@ -76,20 +71,33 @@ public class FileManagerTab extends JPanel {
         });
     }
 
+    @Override
+    public void bindEvents() {
+        fileTree.addTreeSelectionListener(e -> {
+            File selectedFile = fileTree.getSelectedFile();
+            if (selectedFile != null && selectedFile.isFile()) {
+                filePreviewPanel.previewFile(selectedFile);
+                metadataDisplayPanel.displayMetadata(selectedFile);
+            }
+        });
+    }
+
+    @Override
+    public JComponent getComponent() {
+        return this;
+    }
+
     private void loadWatchedFolders() {
         Set<String> foldersToWatch = new HashSet<>();
 
-        // 添加程式運行目錄
         File currentDir = new File(System.getProperty("user.dir"));
         foldersToWatch.add(currentDir.getAbsolutePath());
 
-        // 加載上次監聽的目錄
         String lastWatchedFolders = cache.getParameter("lastWatchedFolders", "");
         if (!lastWatchedFolders.isEmpty()) {
             foldersToWatch.addAll(Arrays.asList(lastWatchedFolders.split(",")));
         }
 
-        // 監聽所有有效的資料夾
         for (String folderPath : foldersToWatch) {
             File folder = new File(folderPath);
             if (folder.exists() && folder.isDirectory()) {
@@ -137,7 +145,6 @@ public class FileManagerTab extends JPanel {
         log.info("Saved watched folders: {}", watchedFolders);
     }
 
-
     public void clearMetadata() {
         List<File> selectedFiles = fileTree.getSelectedFiles();
         if (!selectedFiles.isEmpty()) {
@@ -153,7 +160,7 @@ public class FileManagerTab extends JPanel {
                                 I18nManager.getString("fileManager.unprocessedFiles") + ": " + unprocessedFileNames);
             }
             if (selectedFiles.size() == 1) {
-                metadataDisplayPanel.displayMetadata(selectedFiles.getFirst());
+                metadataDisplayPanel.displayMetadata(selectedFiles.get(0));
             }
         } else {
             JOptionPane.showMessageDialog(this, I18nManager.getString("fileManager.noFilesSelected"));
@@ -184,7 +191,6 @@ public class FileManagerTab extends JPanel {
         SwingUtilities.invokeLater(() -> {
             log.debug("File changed: {}, Change type: {}", changedFile.getPath(), changeType);
 
-            // 更新文件樹
             switch (changeType) {
                 case CREATED:
                     fileTree.updateTreeView(changedFile, true, false, false);
@@ -197,13 +203,11 @@ public class FileManagerTab extends JPanel {
                     break;
             }
 
-            // 如果變更的文件當前正在預覽中，刷新其內容
             if (filePreviewPanel.getCurrentFile() != null &&
                     filePreviewPanel.getCurrentFile().equals(changedFile)) {
                 filePreviewPanel.refreshContent();
             }
 
-            // 如果變更的文件當前正在顯示元數據，更新元數據顯示
             if (metadataDisplayPanel.getCurrentFile() != null &&
                     metadataDisplayPanel.getCurrentFile().equals(changedFile)) {
                 metadataDisplayPanel.refreshMetadata();
