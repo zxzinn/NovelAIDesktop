@@ -41,15 +41,35 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
         extraNoiseSeedField = createTextField(20);
         smeaCheckbox = createCheckBox("SMEA");
         smeaDynCheckbox = createCheckBox("SMEA DYN");
-        uploadImageButton = new JButton(I18nManager.getString("button.uploadImage"));
+
+        widthField = createTextField(20);
+        heightField = createTextField(20);
     }
 
     @Override
     protected void layoutSpecificComponents(GridBagConstraints gbc) {
-        addSettingsPanel("Image Settings", createImageSettingsPanel(), gbc);
-        addSettingsPanel("Sampling Settings", createSamplingSettingsPanel(), gbc);
-        gbc.gridy++;
-        add(uploadImageButton, gbc);
+    }
+
+    @Override
+    protected JPanel createSpecificSettingsPanel() {
+        JPanel specificSettingsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = createGridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.5;
+        gbc.fill = GridBagConstraints.BOTH;
+        specificSettingsPanel.add(createImageSettingsPanel(), gbc);
+
+        gbc.gridy = 1;
+        specificSettingsPanel.add(createSamplingSettingsPanel(), gbc);
+
+        gbc.gridy = 2;
+        gbc.weighty = 0;
+        specificSettingsPanel.add(createUploadImagePanel(), gbc);
+
+        return specificSettingsPanel;
     }
 
     private JPanel createImageSettingsPanel() {
@@ -85,6 +105,13 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         panel.add(component, gbc);
+    }
+
+    private JPanel createUploadImagePanel() {
+        JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        uploadImageButton = new JButton(I18nManager.getString("button.uploadImage"));
+        panel.add(uploadImageButton);
+        return panel;
     }
 
     @Override

@@ -32,20 +32,14 @@ public class PromptPanel extends JPanel implements UIComponent {
         positivePromptArea = createPromptArea();
         negativePromptArea = createPromptArea();
 
-        // 使用 JTextArea 的 setLineWrap 和 setWrapStyleWord 方法來實現文字換行
-        positivePromptArea.setLineWrap(true);
-        positivePromptArea.setWrapStyleWord(true);
-        negativePromptArea.setLineWrap(true);
-        negativePromptArea.setWrapStyleWord(true);
-
-        // 使用 BorderFactory 創建帶有標題的邊框，提升視覺效果
         positivePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.positive")));
         negativePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.negative")));
     }
 
     private JTextArea createPromptArea() {
         JTextArea area = new JTextArea(5, 40);
-        // 設置字體為等寬字體，提升輸入體驗
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
         area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         return area;
     }

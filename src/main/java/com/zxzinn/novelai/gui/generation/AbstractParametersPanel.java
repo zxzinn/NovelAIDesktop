@@ -58,11 +58,27 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     public void layoutComponents() {
         GridBagConstraints gbc = createGridBagConstraints();
 
-        addSettingsPanel("API Settings", createApiSettingsPanel(), gbc);
-        addSettingsPanel("Output Settings", createOutputSettingsPanel(), gbc);
+        JTabbedPane tabbedPane = new JTabbedPane();
 
-        layoutSpecificComponents(gbc);
+        JPanel apiSettingsPanel = createApiSettingsPanel();
+        JPanel outputSettingsPanel = createOutputSettingsPanel();
+        tabbedPane.addTab("API Settings", apiSettingsPanel);
+        tabbedPane.addTab("Output Settings", outputSettingsPanel);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.2;
+        gbc.fill = GridBagConstraints.BOTH;
+        add(tabbedPane, gbc);
+
+        JPanel specificSettingsPanel = createSpecificSettingsPanel();
+        gbc.gridy = 1;
+        gbc.weighty = 0.8;
+        add(specificSettingsPanel, gbc);
     }
+
+    protected abstract JPanel createSpecificSettingsPanel();
 
     protected abstract void layoutSpecificComponents(GridBagConstraints gbc);
 

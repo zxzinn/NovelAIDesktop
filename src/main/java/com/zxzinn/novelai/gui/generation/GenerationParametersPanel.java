@@ -38,6 +38,25 @@ public class GenerationParametersPanel extends AbstractParametersPanel {
         addSettingsPanel("Sampling Settings", createSamplingSettingsPanel(), gbc);
     }
 
+    @Override
+    protected JPanel createSpecificSettingsPanel() {
+        JPanel specificSettingsPanel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = createGridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.5;
+        gbc.fill = GridBagConstraints.BOTH;
+        specificSettingsPanel.add(createImageSettingsPanel(), gbc);
+
+        gbc.gridy = 1;
+        specificSettingsPanel.add(createSamplingSettingsPanel(), gbc);
+
+        return specificSettingsPanel;
+    }
+
     private JPanel createImageSettingsPanel() {
         JPanel panel = createTitledPanel("Image Settings");
         addComponentWithLabel(I18nManager.getString("param.width"), widthField, panel);
