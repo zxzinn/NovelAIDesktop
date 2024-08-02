@@ -42,9 +42,9 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     @Override
     public void initializeComponents() {
-        modelComboBox = new JComboBox<>(NAIConstants.MODELS);
-        apiKeyField = new JTextField(20);
-        outputDirField = new JTextField(20);
+        modelComboBox = createComboBox(NAIConstants.MODELS);
+        apiKeyField = createTextField(20);
+        outputDirField = createTextField(20);
 
         apiKeyHelpButton = createHelpButton("tooltip.apiKey");
         outputDirHelpButton = createHelpButton("tooltip.outputDir");
@@ -57,32 +57,56 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     @Override
     public void layoutComponents() {
-        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = createGridBagConstraints();
+
+        addSettingsPanel("API Settings", createApiSettingsPanel(), gbc);
+        addSettingsPanel("Output Settings", createOutputSettingsPanel(), gbc);
+
+        layoutSpecificComponents(gbc);
+    }
+
+    protected abstract void layoutSpecificComponents(GridBagConstraints gbc);
+
+    private JPanel createApiSettingsPanel() {
+        JPanel panel = createTitledPanel("API Settings");
+        addComponentWithLabel(I18nManager.getString("param.apiKey"), apiKeyField, apiKeyHelpButton, panel);
+        addComponentWithLabel(I18nManager.getString("param.model"), modelComboBox, null, panel);
+        return panel;
+    }
+
+    private JPanel createOutputSettingsPanel() {
+        JPanel panel = createTitledPanel("Output Settings");
+        addComponentWithLabel(I18nManager.getString("param.outputDir"), outputDirField, outputDirHelpButton, outputDirBrowseButton, panel);
+        return panel;
+    }
+
+    protected JTextField createTextField(int columns) {
+        return new JTextField(columns);
+    }
+
+    protected JComboBox<String> createComboBox(String[] items) {
+        return new JComboBox<>(items);
+    }
+
+    protected JCheckBox createCheckBox(String text) {
+        return new JCheckBox(text);
+    }
+
+    protected void addSettingsPanel(String title, JPanel panel, GridBagConstraints gbc) {
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        add(panel, gbc);
+    }
+
+    protected GridBagConstraints createGridBagConstraints() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
-
-        int gridy = 0;
-
-        JPanel apiPanel = createTitledPanel("API Settings");
-        addComponentWithLabel(I18nManager.getString("param.apiKey"), apiKeyField, apiKeyHelpButton, apiPanel);
-        addComponentWithLabel(I18nManager.getString("param.model"), modelComboBox, null, apiPanel);
-        gbc.gridx = 0;
-        gbc.gridy = gridy++;
-        gbc.gridwidth = 2;
-        add(apiPanel, gbc);
-
-        JPanel outputPanel = createTitledPanel("Output Settings");
-        addComponentWithLabel(I18nManager.getString("param.outputDir"), outputDirField, outputDirHelpButton, outputDirBrowseButton, outputPanel);
-        gbc.gridy = gridy++;
-        add(outputPanel, gbc);
-
-        layoutSpecificComponents(gbc, gridy);
+        gbc.gridy = -1;
+        return gbc;
     }
-
-    protected abstract void layoutSpecificComponents(GridBagConstraints gbc, int startGridy);
 
     @Override
     public void bindEvents() {

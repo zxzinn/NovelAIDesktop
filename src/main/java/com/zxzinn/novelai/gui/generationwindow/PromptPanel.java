@@ -1,6 +1,7 @@
 package com.zxzinn.novelai.gui.generationwindow;
 
-import com.zxzinn.novelai.processing.embed.EmbedProcessor;
+import com.zxzinn.novelai.processing.PromptProcessor;
+import com.zxzinn.novelai.processing.EmbedPromptProcessor;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
@@ -11,38 +12,36 @@ import java.awt.*;
 
 @Log4j2
 public class PromptPanel extends JPanel implements UIComponent {
-    private final EmbedProcessor embedProcessor;
+    private final PromptProcessor promptProcessor;
     private final Cache cache;
     private JTextArea positivePromptArea;
     private JTextArea negativePromptArea;
 
     public PromptPanel() {
+        this.promptProcessor = new EmbedPromptProcessor();
+        this.cache = Cache.getInstance();
         setLayout(new GridBagLayout());
-        embedProcessor = new EmbedProcessor();
-        cache = Cache.getInstance();
 
         initializeComponents();
         layoutComponents();
-        bindEvents();
         loadCachedPrompts();
     }
 
     @Override
     public void initializeComponents() {
-        positivePromptArea = new JTextArea(5, 40);
-        negativePromptArea = new JTextArea(5, 40);
-
-        positivePromptArea.setLineWrap(true);
-        positivePromptArea.setWrapStyleWord(true);
-        negativePromptArea.setLineWrap(true);
-        negativePromptArea.setWrapStyleWord(true);
+        positivePromptArea = createPromptArea();
+        negativePromptArea = createPromptArea();
 
         positivePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.positive")));
         negativePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.negative")));
+    }
 
-        Font font = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-        positivePromptArea.setFont(font);
-        negativePromptArea.setFont(font);
+    private JTextArea createPromptArea() {
+        JTextArea area = new JTextArea(5, 40);
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true);
+        area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        return area;
     }
 
     @Override
@@ -72,19 +71,15 @@ public class PromptPanel extends JPanel implements UIComponent {
     }
 
     public String getPositivePrompt() {
-        String rawPrompt = positivePromptArea.getText();
-        String processedPrompt = embedProcessor.processPrompt(rawPrompt);
-        log.debug("Raw positive prompt: {}", rawPrompt);
-        log.debug("Processed positive prompt: {}", processedPrompt);
-        return processedPrompt;
+        return processPrompt(positivePromptArea.getText());
     }
 
     public String getNegativePrompt() {
-        String rawPrompt = negativePromptArea.getText();
-        String processedPrompt = embedProcessor.processPrompt(rawPrompt);
-        log.debug("Raw negative prompt: {}", rawPrompt);
-        log.debug("Processed negative prompt: {}", processedPrompt);
-        return processedPrompt;
+        return processPrompt(negativePromptArea.getText());
+    }
+
+    private String processPrompt(String rawPrompt) {
+        return promptProcessor.processPrompt(rawPrompt);
     }
 
     private void loadCachedPrompts() {

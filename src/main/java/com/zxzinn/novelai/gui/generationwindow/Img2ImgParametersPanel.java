@@ -32,46 +32,45 @@ public class Img2ImgParametersPanel extends AbstractParametersPanel {
 
     @Override
     protected void initSpecificComponents() {
-        widthField = new JTextField(20);
-        heightField = new JTextField(20);
-        scaleField = new JTextField(20);
-        samplerComboBox = new JComboBox<>(NAIConstants.SAMPLERS);
-        stepsField = new JTextField(20);
-        seedField = new JTextField(20);
-        nSamplesField = new JTextField(20);
-        extraNoiseSeedField = new JTextField(20);
-        smeaCheckbox = new JCheckBox("SMEA");
-        smeaDynCheckbox = new JCheckBox("SMEA DYN");
+        widthField = createTextField(20);
+        heightField = createTextField(20);
+        scaleField = createTextField(20);
+        samplerComboBox = createComboBox(NAIConstants.SAMPLERS);
+        stepsField = createTextField(20);
+        seedField = createTextField(20);
+        nSamplesField = createTextField(20);
+        extraNoiseSeedField = createTextField(20);
+        smeaCheckbox = createCheckBox("SMEA");
+        smeaDynCheckbox = createCheckBox("SMEA DYN");
         uploadImageButton = new JButton(I18nManager.getString("button.uploadImage"));
     }
 
     @Override
-    protected void layoutSpecificComponents(GridBagConstraints gbc, int startGridy) {
-        int gridy = startGridy;
-
-        JPanel imageSettingsPanel = createTitledPanel("Image Settings");
-        addComponentWithLabel(I18nManager.getString("param.width"), widthField, imageSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.height"), heightField, imageSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.scale"), scaleField, imageSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.n_samples"), nSamplesField, imageSettingsPanel);
-
-        gbc.gridy = gridy++;
-        gbc.gridwidth = 2;
-        add(imageSettingsPanel, gbc);
-
-        JPanel samplingSettingsPanel = createTitledPanel("Sampling Settings");
-        addComponentWithLabel(I18nManager.getString("param.sampler"), samplerComboBox, samplingSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.steps"), stepsField, samplingSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.seed"), seedField, samplingSettingsPanel);
-        addComponentWithLabel(I18nManager.getString("param.extraNoiseSeed"), extraNoiseSeedField, samplingSettingsPanel);
-        samplingSettingsPanel.add(smeaCheckbox);
-        samplingSettingsPanel.add(smeaDynCheckbox);
-
-        gbc.gridy = gridy++;
-        add(samplingSettingsPanel, gbc);
-
-        gbc.gridy = gridy;
+    protected void layoutSpecificComponents(GridBagConstraints gbc) {
+        addSettingsPanel("Image Settings", createImageSettingsPanel(), gbc);
+        addSettingsPanel("Sampling Settings", createSamplingSettingsPanel(), gbc);
+        gbc.gridy++;
         add(uploadImageButton, gbc);
+    }
+
+    private JPanel createImageSettingsPanel() {
+        JPanel panel = createTitledPanel("Image Settings");
+        addComponentWithLabel(I18nManager.getString("param.width"), widthField, panel);
+        addComponentWithLabel(I18nManager.getString("param.height"), heightField, panel);
+        addComponentWithLabel(I18nManager.getString("param.scale"), scaleField, panel);
+        addComponentWithLabel(I18nManager.getString("param.n_samples"), nSamplesField, panel);
+        return panel;
+    }
+
+    private JPanel createSamplingSettingsPanel() {
+        JPanel panel = createTitledPanel("Sampling Settings");
+        addComponentWithLabel(I18nManager.getString("param.sampler"), samplerComboBox, panel);
+        addComponentWithLabel(I18nManager.getString("param.steps"), stepsField, panel);
+        addComponentWithLabel(I18nManager.getString("param.seed"), seedField, panel);
+        addComponentWithLabel(I18nManager.getString("param.extraNoiseSeed"), extraNoiseSeedField, panel);
+        panel.add(smeaCheckbox);
+        panel.add(smeaDynCheckbox);
+        return panel;
     }
 
     private void addComponentWithLabel(String labelText, JComponent component, JPanel panel) {

@@ -6,7 +6,7 @@ import com.zxzinn.novelai.utils.UIComponent;
 import javax.swing.*;
 import java.awt.*;
 
-public class ControlPanel extends JPanel implements UIComponent {
+public class FileManagerControlPanel extends JPanel implements UIComponent {
     private JTextField pathField;
     private JButton addPathButton;
     private JButton removePathButton;
@@ -14,7 +14,7 @@ public class ControlPanel extends JPanel implements UIComponent {
     private JButton constructDatabaseButton;
     private final FileManagerTab fileManagerTab;
 
-    public ControlPanel(FileManagerTab fileManagerTab) {
+    public FileManagerControlPanel(FileManagerTab fileManagerTab) {
         this.fileManagerTab = fileManagerTab;
 
         initializeComponents();

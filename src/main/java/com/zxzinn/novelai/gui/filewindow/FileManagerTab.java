@@ -21,7 +21,7 @@ public class FileManagerTab extends JPanel implements UIComponent {
     private FileTree fileTree;
     private FilePreviewPanel filePreviewPanel;
     private MetadataDisplayPanel metadataDisplayPanel;
-    private ControlPanel controlPanel;
+    private FileManagerControlPanel fileManagerControlPanel;
     private FileWatcher fileWatcher;
     private Cache cache;
 
@@ -39,7 +39,7 @@ public class FileManagerTab extends JPanel implements UIComponent {
         fileTree = new FileTree();
         filePreviewPanel = new FilePreviewPanel();
         metadataDisplayPanel = new MetadataDisplayPanel();
-        controlPanel = new ControlPanel(this);
+        fileManagerControlPanel = new FileManagerControlPanel(this);
         fileWatcher = new FileWatcher(this::onFileChanged);
     }
 
@@ -48,7 +48,7 @@ public class FileManagerTab extends JPanel implements UIComponent {
         setLayout(new BorderLayout());
 
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.add(controlPanel, BorderLayout.NORTH);
+        leftPanel.add(fileManagerControlPanel, BorderLayout.NORTH);
         leftPanel.add(new JScrollPane(fileTree), BorderLayout.CENTER);
 
         JPanel leftCombinedPanel = new JPanel(new BorderLayout());

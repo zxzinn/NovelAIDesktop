@@ -4,6 +4,7 @@ import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.api.NAIRequest;
 import com.zxzinn.novelai.api.RequestBuilder;
 import com.zxzinn.novelai.config.ConfigManager;
+import com.zxzinn.novelai.controller.MainController;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
 import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
 import com.zxzinn.novelai.gui.generationwindow.*;
@@ -11,6 +12,7 @@ import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
@@ -21,6 +23,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 @Log4j2
+@Getter
 public class MainGUI extends JFrame implements UIComponent {
     private static final ConfigManager config = ConfigManager.getInstance();
     public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
@@ -28,21 +31,14 @@ public class MainGUI extends JFrame implements UIComponent {
 
     private JTabbedPane mainTabbedPane;
     private PromptPanel promptPanel;
-    @Getter
     private AbstractParametersPanel currentParametersPanel;
     private GenerationParametersPanel generationParametersPanel;
     private Img2ImgParametersPanel img2ImgParametersPanel;
     private ImagePreviewPanel imagePreviewPanel;
     private HistoryPanel historyPanel;
-    @Getter
-    private JButton generateButton;
-    @Getter
-    private JComboBox<String> generationCountComboBox;
+    private GenerationControlPanel generationControlPanel;
     private JTextArea consoleArea;
     private FileManagerTab fileManagerTab;
-
-    private final ImageGenerator imageGenerator;
-    private final Cache cache;
 
     private JPanel leftPanel;
     private JPanel parameterPanel;
@@ -50,8 +46,11 @@ public class MainGUI extends JFrame implements UIComponent {
     private JPanel cardPanel;
     private JComboBox<String> actionComboBox;
 
-    public MainGUI(ImageGenerator imageGenerator) {
-        this.imageGenerator = imageGenerator;
+    private final Cache cache;
+    @Setter
+    private MainController controller;
+
+    public MainGUI() {
         this.cache = Cache.getInstance();
 
         setTitle(config.getString("application.name") + " v" + config.getString("application.version"));
@@ -76,16 +75,7 @@ public class MainGUI extends JFrame implements UIComponent {
         currentParametersPanel = generationParametersPanel;
         imagePreviewPanel = new ImagePreviewPanel();
         historyPanel = new HistoryPanel(imagePreviewPanel);
-
-        generateButton = new JButton(I18nManager.getString("button.generate"));
-        generateButton.setFont(new Font(generateButton.getFont().getName(), Font.BOLD, 16));
-        generateButton.setBackground(new Color(70, 130, 180));
-        generateButton.setForeground(Color.WHITE);
-        generateButton.setPreferredSize(new Dimension(200, 40));
-        generateButton.setFocusPainted(false);
-
-        String[] countOptions = {"1", "2", "3", "4", I18nManager.getString("option.infinite")};
-        generationCountComboBox = new JComboBox<>(countOptions);
+        generationControlPanel = new GenerationControlPanel(this::onGenerate);
 
         consoleArea = new JTextArea(5, 20);
         consoleArea.setEditable(false);
@@ -114,13 +104,7 @@ public class MainGUI extends JFrame implements UIComponent {
         parameterPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         leftPanel.add(parameterPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        buttonPanel.add(generateButton);
-        buttonPanel.add(Box.createHorizontalStrut(10));
-        buttonPanel.add(generationCountComboBox);
-        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        leftPanel.add(buttonPanel, BorderLayout.SOUTH);
+        leftPanel.add(generationControlPanel, BorderLayout.SOUTH);
 
         JPanel generatorPanel = new JPanel(new BorderLayout());
         generatorPanel.add(promptPanel, BorderLayout.NORTH);
@@ -143,7 +127,6 @@ public class MainGUI extends JFrame implements UIComponent {
     @Override
     public void bindEvents() {
         actionComboBox.addActionListener(e -> updateParametersPanel());
-        generateButton.addActionListener(e -> toggleGeneration());
     }
 
     @Override
@@ -170,22 +153,22 @@ public class MainGUI extends JFrame implements UIComponent {
 
     private void switchToGenerationPanel() {
         if (currentParametersPanel != generationParametersPanel) {
-            currentParametersPanel.saveToCache();
-            cardLayout.show(cardPanel, "generate");
-            currentParametersPanel = generationParametersPanel;
-            currentParametersPanel.loadCachedValues();
-            updateUIForCurrentPanel();
+            switchPanel(generationParametersPanel, "generate");
         }
     }
 
     private void switchToImg2ImgPanel() {
         if (currentParametersPanel != img2ImgParametersPanel) {
-            currentParametersPanel.saveToCache();
-            cardLayout.show(cardPanel, "img2img");
-            currentParametersPanel = img2ImgParametersPanel;
-            currentParametersPanel.loadCachedValues();
-            updateUIForCurrentPanel();
+            switchPanel(img2ImgParametersPanel, "img2img");
         }
+    }
+
+    private void switchPanel(AbstractParametersPanel newPanel, String cardName) {
+        currentParametersPanel.saveToCache();
+        cardLayout.show(cardPanel, cardName);
+        currentParametersPanel = newPanel;
+        currentParametersPanel.loadCachedValues();
+        updateUIForCurrentPanel();
     }
 
     private void updateUIForCurrentPanel() {
@@ -240,26 +223,19 @@ public class MainGUI extends JFrame implements UIComponent {
         return RequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
     }
 
-    private void toggleGeneration() {
-        if (imageGenerator.isGenerating()) {
-            generateButton.setEnabled(false);
-            generateButton.setText(I18nManager.getString("button.stopping"));
-            imageGenerator.requestStop();
-        } else {
-            generateButton.setText(I18nManager.getString("button.stop"));
-            String countSelection = (String) generationCountComboBox.getSelectedItem();
-            assert countSelection != null;
-            int count = countSelection.equals(I18nManager.getString("option.infinite")) ? Integer.MAX_VALUE : Integer.parseInt(countSelection);
-
-            NAIRequest request = buildRequest();
-            String apiKey = currentParametersPanel.getApiKeyField().getText();
-            String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
-
-            imageGenerator.toggleGeneration(request, apiKey, count, outputDir);
-        }
+    private void onGenerate(int count) {
+        NAIRequest request = buildRequest();
+        String apiKey = currentParametersPanel.getApiKeyField().getText();
+        String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
+        controller.toggleGeneration(request, apiKey, count, outputDir);
     }
 
-    // Make these methods public
+    public void updateGenerationControlPanel(boolean isGenerating) {
+        SwingUtilities.invokeLater(() -> {
+            generationControlPanel.updateState(isGenerating);
+        });
+    }
+
     public void loadCachedValues() {
         currentParametersPanel.loadCachedValues();
     }
