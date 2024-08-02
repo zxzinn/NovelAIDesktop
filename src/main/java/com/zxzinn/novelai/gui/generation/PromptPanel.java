@@ -17,17 +17,20 @@ public class PromptPanel extends JPanel implements UIComponent {
     private final Cache cache;
     private JTextArea positivePromptArea;
     private JTextArea negativePromptArea;
-    @Getter private JTextArea positivePreviewArea;
-    @Getter private JTextArea negativePreviewArea;
+    private JTextArea positivePreviewArea;
+    private JTextArea negativePreviewArea;
     private JButton refreshPositiveButton;
     private JButton refreshNegativeButton;
-    private JToggleButton modeToggleButton;
-    @Getter private boolean previewMode = false;
+    private JTabbedPane modeTabbedPane;
+    private JPanel autoModePanel;
+    private JPanel manualModePanel;
+    @Getter
+    private boolean isAutoMode = true;
 
     public PromptPanel() {
         this.promptProcessor = new EmbedPromptProcessor();
         this.cache = Cache.getInstance();
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
 
         initializeComponents();
         layoutComponents();
@@ -37,86 +40,130 @@ public class PromptPanel extends JPanel implements UIComponent {
 
     @Override
     public void initializeComponents() {
-        positivePromptArea = createPromptArea();
-        negativePromptArea = createPromptArea();
-        positivePreviewArea = createPromptArea();
-        negativePreviewArea = createPromptArea();
+        modeTabbedPane = new JTabbedPane();
+        autoModePanel = new JPanel(new GridBagLayout());
+        manualModePanel = new JPanel(new GridBagLayout());
 
-        positivePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.positive")));
-        negativePromptArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.negative")));
-        positivePreviewArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.positivePreview")));
-        negativePreviewArea.setBorder(BorderFactory.createTitledBorder(I18nManager.getString("prompt.negativePreview")));
+        positivePromptArea = createPromptArea("prompt.positive");
+        negativePromptArea = createPromptArea("prompt.negative");
+        positivePreviewArea = createPromptArea("prompt.positivePreview");
+        negativePreviewArea = createPromptArea("prompt.negativePreview");
 
         refreshPositiveButton = new JButton(I18nManager.getString("button.refreshPositive"));
         refreshNegativeButton = new JButton(I18nManager.getString("button.refreshNegative"));
-        modeToggleButton = new JToggleButton(I18nManager.getString("button.togglePreviewMode"));
     }
 
-    private JTextArea createPromptArea() {
+    private JTextArea createPromptArea(String borderTitle) {
         JTextArea area = new JTextArea(5, 40);
         area.setLineWrap(true);
         area.setWrapStyleWord(true);
         area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        area.setBorder(BorderFactory.createTitledBorder(I18nManager.getString(borderTitle)));
         return area;
     }
 
     @Override
     public void layoutComponents() {
+        layoutAutoModePanel();
+        layoutManualModePanel();
+
+        modeTabbedPane.addTab(I18nManager.getString("tab.autoMode"), autoModePanel);
+        modeTabbedPane.addTab(I18nManager.getString("tab.manualMode"), manualModePanel);
+
+        add(modeTabbedPane, BorderLayout.CENTER);
+    }
+
+    private void layoutAutoModePanel() {
+        GridBagConstraints gbc = createGridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        autoModePanel.add(new JLabel(I18nManager.getString("prompt.positive")), gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 1.0;
+        autoModePanel.add(new JScrollPane(positivePromptArea), gbc);
+
+        gbc.gridy = 2;
+        gbc.weighty = 0.0;
+        autoModePanel.add(new JLabel(I18nManager.getString("prompt.negative")), gbc);
+
+        gbc.gridy = 3;
+        gbc.weighty = 1.0;
+        autoModePanel.add(new JScrollPane(negativePromptArea), gbc);
+    }
+
+    private void layoutManualModePanel() {
+        GridBagConstraints gbc = createGridBagConstraints();
+
+        // 正面提示詞
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.weighty = 0.0;
+        manualModePanel.add(new JLabel(I18nManager.getString("prompt.positive")), gbc);
+
+        gbc.gridy = 1;
+        gbc.weighty = 1.0;
+        manualModePanel.add(new JScrollPane(positivePromptArea), gbc);
+
+        gbc.gridx = 1;
+        manualModePanel.add(new JScrollPane(positivePreviewArea), gbc);
+
+        gbc.gridx = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        manualModePanel.add(refreshPositiveButton, gbc);
+
+        // 負面提示詞
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        manualModePanel.add(new JLabel(I18nManager.getString("prompt.negative")), gbc);
+
+        gbc.gridy = 3;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        manualModePanel.add(new JScrollPane(negativePromptArea), gbc);
+
+        gbc.gridx = 1;
+        manualModePanel.add(new JScrollPane(negativePreviewArea), gbc);
+
+        gbc.gridx = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+        manualModePanel.add(refreshNegativeButton, gbc);
+    }
+
+    private GridBagConstraints createGridBagConstraints() {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-
+        gbc.weighty = 0.0;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        add(new JScrollPane(positivePromptArea), gbc);
-
-        gbc.gridx = 1;
-        add(new JScrollPane(positivePreviewArea), gbc);
-
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0.0;
-        add(refreshPositiveButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        add(new JScrollPane(negativePromptArea), gbc);
-
-        gbc.gridx = 1;
-        add(new JScrollPane(negativePreviewArea), gbc);
-
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0.0;
-        add(refreshNegativeButton, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 3;
-        add(modeToggleButton, gbc);
-
-        updateComponentVisibility();
+        return gbc;
     }
 
     @Override
     public void bindEvents() {
         refreshPositiveButton.addActionListener(e -> refreshPreview(true));
         refreshNegativeButton.addActionListener(e -> refreshPreview(false));
-        modeToggleButton.addActionListener(e -> {
-            previewMode = modeToggleButton.isSelected();
+        modeTabbedPane.addChangeListener(e -> {
+            isAutoMode = modeTabbedPane.getSelectedIndex() == 0;
             updateComponentVisibility();
         });
     }
 
     private void updateComponentVisibility() {
-        positivePreviewArea.setVisible(previewMode);
-        negativePreviewArea.setVisible(previewMode);
-        refreshPositiveButton.setVisible(previewMode);
-        refreshNegativeButton.setVisible(previewMode);
+        positivePreviewArea.setVisible(!isAutoMode);
+        negativePreviewArea.setVisible(!isAutoMode);
+        refreshPositiveButton.setVisible(!isAutoMode);
+        refreshNegativeButton.setVisible(!isAutoMode);
         revalidate();
         repaint();
     }
@@ -134,11 +181,11 @@ public class PromptPanel extends JPanel implements UIComponent {
     }
 
     public String getPositivePrompt() {
-        return previewMode ? positivePreviewArea.getText() : processPrompt(positivePromptArea.getText());
+        return isAutoMode ? positivePromptArea.getText() : positivePreviewArea.getText();
     }
 
     public String getNegativePrompt() {
-        return previewMode ? negativePreviewArea.getText() : processPrompt(negativePromptArea.getText());
+        return isAutoMode ? negativePromptArea.getText() : negativePreviewArea.getText();
     }
 
     private String processPrompt(String rawPrompt) {
