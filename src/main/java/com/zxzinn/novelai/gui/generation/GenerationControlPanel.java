@@ -14,6 +14,7 @@ public class GenerationControlPanel extends JPanel {
         setLayout(new FlowLayout(FlowLayout.CENTER));
 
         generateButton = new JButton(I18nManager.getString("button.generate"));
+        // 調整按鈕字體加大加粗，凸顯主要操作
         generateButton.setFont(new Font(generateButton.getFont().getName(), Font.BOLD, 16));
         generateButton.setBackground(new Color(70, 130, 180));
         generateButton.setForeground(Color.WHITE);

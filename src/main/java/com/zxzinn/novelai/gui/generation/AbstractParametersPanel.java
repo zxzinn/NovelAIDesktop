@@ -153,17 +153,20 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     protected JButton createHelpButton(String tooltipKey) {
         JButton helpButton = new JButton("?");
         helpButton.setToolTipText(I18nManager.getString(tooltipKey));
-        helpButton.setMargin(new Insets(0, 0, 0, 0));
+        // 去除按鈕的焦點繪製，使其視覺更加簡潔
         helpButton.setFocusPainted(false);
+        helpButton.setMargin(new Insets(0, 0, 0, 0));
         helpButton.setPreferredSize(new Dimension(20, 20));
         return helpButton;
     }
 
     protected JButton createBrowseButton(JTextField textField) {
         JButton browseButton = new JButton("...");
-        browseButton.setMargin(new Insets(0, 0, 0, 0));
+        // 去除按鈕的焦點繪製，使其視覺更加簡潔
         browseButton.setFocusPainted(false);
+        browseButton.setMargin(new Insets(0, 0, 0, 0));
         browseButton.setPreferredSize(new Dimension(20, 20));
+
         browseButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -172,6 +175,7 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
                 textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
             }
         });
+
         return browseButton;
     }
 
