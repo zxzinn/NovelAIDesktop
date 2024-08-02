@@ -6,6 +6,8 @@ import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 public class GenerationParametersPanel extends AbstractParametersPanel {
@@ -90,5 +92,21 @@ public class GenerationParametersPanel extends AbstractParametersPanel {
         cache.setParameter("smea", String.valueOf(smeaCheckbox.isSelected()));
         cache.setParameter("smeaDyn", String.valueOf(smeaDynCheckbox.isSelected()));
         cache.saveCache();
+    }
+
+    @Override
+    public Map<String, Object> getParameters() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("model", modelComboBox.getSelectedItem());
+        params.put("width", Integer.parseInt(widthField.getText()));
+        params.put("height", Integer.parseInt(heightField.getText()));
+        params.put("scale", Double.parseDouble(scaleField.getText()));
+        params.put("sampler", samplerComboBox.getSelectedItem());
+        params.put("steps", Integer.parseInt(stepsField.getText()));
+        params.put("seed", Long.parseLong(seedField.getText()));
+        params.put("n_samples", Integer.parseInt(nSamplesField.getText()));
+        params.put("sm", smeaCheckbox.isSelected());
+        params.put("sm_dyn", smeaDynCheckbox.isSelected());
+        return params;
     }
 }

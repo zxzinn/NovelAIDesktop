@@ -1,9 +1,6 @@
 package com.zxzinn.novelai.gui;
 
-import com.zxzinn.novelai.api.NAIConstants;
-import com.zxzinn.novelai.api.NAIGenerate;
-import com.zxzinn.novelai.api.NAIImg2Img;
-import com.zxzinn.novelai.api.NAIRequest;
+import com.zxzinn.novelai.api.*;
 import com.zxzinn.novelai.config.ConfigManager;
 import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
@@ -227,53 +224,8 @@ public class MainGUI extends JFrame {
     }
 
     public NAIRequest buildRequest() {
-        String positivePrompt = promptPanel.getPositivePrompt();
-        String negativePrompt = promptPanel.getNegativePrompt();
         String action = (String) actionComboBox.getSelectedItem();
-
-        if ("generate".equals(action)) {
-            GenerationParametersPanel panel = (GenerationParametersPanel) currentParametersPanel;
-            return NAIGenerate.builder()
-                    .input(positivePrompt)
-                    .model((String) panel.getModelComboBox().getSelectedItem())
-                    .action(action)
-                    .width(Integer.parseInt(panel.getWidthField().getText()))
-                    .height(Integer.parseInt(panel.getHeightField().getText()))
-                    .scale(Double.parseDouble(panel.getScaleField().getText()))
-                    .sampler((String) panel.getSamplerComboBox().getSelectedItem())
-                    .steps(Integer.parseInt(panel.getStepsField().getText()))
-                    .seed(Long.parseLong(panel.getSeedField().getText()))
-                    .n_samples(Integer.parseInt(panel.getNSamplesField().getText()))
-                    .negative_prompt(negativePrompt)
-                    .sm(panel.getSmeaCheckbox().isSelected())
-                    .sm_dyn(panel.getSmeaDynCheckbox().isSelected())
-                    .build();
-        } else if ("img2img".equals(action)) {
-            Img2ImgParametersPanel panel = (Img2ImgParametersPanel) currentParametersPanel;
-            String base64Image = panel.getBase64Image();
-            if (base64Image == null || base64Image.isEmpty()) {
-                throw new IllegalStateException("No image uploaded for img2img");
-            }
-            return NAIImg2Img.builder()
-                    .input(positivePrompt)
-                    .model((String) panel.getModelComboBox().getSelectedItem())
-                    .action(action)
-                    .width(Integer.parseInt(panel.getWidthField().getText()))
-                    .height(Integer.parseInt(panel.getHeightField().getText()))
-                    .scale(Double.parseDouble(panel.getScaleField().getText()))
-                    .sampler((String) panel.getSamplerComboBox().getSelectedItem())
-                    .steps(Integer.parseInt(panel.getStepsField().getText()))
-                    .seed(Long.parseLong(panel.getSeedField().getText()))
-                    .n_samples(Integer.parseInt(panel.getNSamplesField().getText()))
-                    .negative_prompt(negativePrompt)
-                    .sm(panel.getSmeaCheckbox().isSelected())
-                    .sm_dyn(panel.getSmeaDynCheckbox().isSelected())
-                    .extra_noise_seed(Long.parseLong(panel.getExtraNoiseSeedField().getText()))
-                    .image(base64Image)
-                    .build();
-        }
-
-        throw new IllegalStateException("Unknown action: " + action);
+        return RequestBuilder.buildRequest(action, promptPanel, currentParametersPanel);
     }
 
 }

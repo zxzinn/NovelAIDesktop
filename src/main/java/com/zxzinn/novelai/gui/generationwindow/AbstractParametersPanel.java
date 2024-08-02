@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -20,6 +21,8 @@ public abstract class AbstractParametersPanel extends JPanel {
     protected JComboBox<String> modelComboBox;
     protected JTextField apiKeyField;
     protected JTextField outputDirField;
+
+    public abstract Map<String, Object> getParameters();
 
     public AbstractParametersPanel() {
         setLayout(new GridBagLayout());
