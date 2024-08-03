@@ -1,7 +1,8 @@
-package com.zxzinn.novelai.utils;
+package com.zxzinn.novelai.utils.DatabaseConstructor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zxzinn.novelai.utils.Metadata.MetadataReader;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;

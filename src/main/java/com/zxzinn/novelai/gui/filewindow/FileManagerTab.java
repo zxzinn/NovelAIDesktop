@@ -1,6 +1,8 @@
 package com.zxzinn.novelai.gui.filewindow;
 
 import com.zxzinn.novelai.utils.*;
+import com.zxzinn.novelai.utils.DatabaseConstructor.DatabaseConstructor;
+import com.zxzinn.novelai.utils.Metadata.MetadataCleaner;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;

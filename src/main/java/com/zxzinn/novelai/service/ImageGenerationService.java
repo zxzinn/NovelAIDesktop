@@ -3,6 +3,7 @@ package com.zxzinn.novelai.service;
 import com.zxzinn.novelai.api.ApiService;
 import com.zxzinn.novelai.api.APIClient;
 import com.zxzinn.novelai.api.GenerationRequest;
+import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.ImageProcessor;
 import lombok.extern.log4j.Log4j2;
 
@@ -39,11 +40,11 @@ public class ImageGenerationService {
         }, executorService);
     }
 
-    public void saveImage(BufferedImage image, String outputDir, Consumer<File> onSaved) {
+    public void saveImage(BufferedImage image, String outputDir) {
         CompletableFuture.runAsync(() -> {
             try {
                 File savedFile = imageProcessor.saveImage(image, outputDir);
-                onSaved.accept(savedFile);
+                log.info(I18nManager.getString("log.imageSaved", savedFile));
             } catch (IOException e) {
                 log.error("Error saving image: {}", e.getMessage());
             }

@@ -47,6 +47,7 @@ public class PromptPreviewManager {
 
     public void shutdown() {
         executorService.shutdownNow();
+        log.info("Prompt preview manager shutdown");
     }
 
     public interface PreviewUpdateListener {

@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.utils;
+package com.zxzinn.novelai.utils.DatabaseConstructor;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -67,8 +67,8 @@ public abstract class DatabaseConstructor {
     }
 
     private static void writeToDatabase(Set<String> tags) throws IOException {
-        File databaseDir = FileUtils.getOrCreateDirectory(DATABASE_FOLDER);
-        File databaseFile = FileUtils.getFileInDirectory(databaseDir, DATABASE_FILE);
+        File databaseDir = new File(System.getProperty("user.dir"), DATABASE_FOLDER);
+        File databaseFile = new File(databaseDir, DATABASE_FILE);
         Set<String> existingTags = new TreeSet<>();
 
         if (databaseFile.exists()) {

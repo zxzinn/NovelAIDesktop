@@ -11,6 +11,7 @@ import java.util.zip.ZipInputStream;
 
 @Log4j2
 public class ImageProcessor {
+
     public BufferedImage extractImageFromZip(byte[] zipData) throws IOException {
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipData))) {
             while (zis.getNextEntry() != null) {

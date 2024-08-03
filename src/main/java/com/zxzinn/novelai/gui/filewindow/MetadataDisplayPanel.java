@@ -1,7 +1,7 @@
 package com.zxzinn.novelai.gui.filewindow;
 
 import com.zxzinn.novelai.utils.I18nManager;
-import com.zxzinn.novelai.utils.MetadataReader;
+import com.zxzinn.novelai.utils.Metadata.MetadataReader;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 

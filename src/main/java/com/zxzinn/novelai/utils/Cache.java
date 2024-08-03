@@ -14,7 +14,7 @@ public class Cache {
 
     private Cache() {
         properties = new Properties();
-        cacheFile = FileUtils.getFileInCurrentDirectory(CACHE_FILE);
+        cacheFile = new File(System.getProperty("user.dir"), CACHE_FILE);
         loadCache();
     }
 

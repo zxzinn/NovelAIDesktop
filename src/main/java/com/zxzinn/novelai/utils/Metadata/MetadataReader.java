@@ -1,4 +1,4 @@
-package com.zxzinn.novelai.utils;
+package com.zxzinn.novelai.utils.Metadata;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

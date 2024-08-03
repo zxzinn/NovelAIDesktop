@@ -1,5 +1,6 @@
-package com.zxzinn.novelai.utils;
+package com.zxzinn.novelai.utils.Metadata;
 
+import com.zxzinn.novelai.utils.EnviromentUtils;
 import lombok.extern.log4j.Log4j2;
 
 import javax.imageio.ImageIO;
@@ -15,8 +16,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static com.zxzinn.novelai.utils.EnviromentUtils.CURRENT_WORKING_DIRECTORY;
+
 @Log4j2
 public class MetadataCleaner {
+    protected static final String PROCESSED_FOLDER = "cleaned";
 
     public static List<File> clearMetadataForFiles(List<File> files) {
         List<File> unprocessedFiles = new ArrayList<>();
@@ -33,8 +37,8 @@ public class MetadataCleaner {
     }
 
     private static void clearMetadataForFile(File file) throws IOException {
-        File cleanedDir = FileUtils.getOrCreateDirectory("cleaned");
-        File outputFile = FileUtils.getFileInDirectory(cleanedDir, file.getName());
+        EnviromentUtils.create(PROCESSED_FOLDER);
+        File outputFile = new File(CURRENT_WORKING_DIRECTORY+PROCESSED_FOLDER, file.getName());
 
         BufferedImage image = ImageIO.read(file);
         if (image == null) {
@@ -77,8 +81,9 @@ public class MetadataCleaner {
             }
         }
 
-        File cleanedDir = FileUtils.getOrCreateDirectory("cleaned");
-        File outputFile = FileUtils.getFileInDirectory(cleanedDir, file.getName());
+        File cleanedDir = new File(System.getProperty("user.dir"), PROCESSED_FOLDER);
+        File outputFile = new File(cleanedDir, file.getName());
+
         ImageIO.write(image, "png", outputFile);
 
         log.info("Cleared LSB data for file: {}", file.getName());
