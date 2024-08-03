@@ -42,8 +42,8 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     @Override
     public void initializeComponents() {
         modelComboBox = createComboBox(NAIConstants.MODELS);
-        apiKeyField = createTextField(20);
-        outputDirField = createTextField(20);
+        apiKeyField = createTextField();
+        outputDirField = createTextField();
 
         apiKeyHelpButton = createHelpButton("tooltip.apiKey");
         outputDirHelpButton = createHelpButton("tooltip.outputDir");
@@ -80,8 +80,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     protected abstract JPanel createSpecificSettingsPanel();
 
-    protected abstract void layoutSpecificComponents(GridBagConstraints gbc);
-
     private JPanel createApiSettingsPanel() {
         JPanel panel = createTitledPanel("API Settings");
         addComponentWithLabel(I18nManager.getString("param.apiKey"), apiKeyField, apiKeyHelpButton, panel);
@@ -95,8 +93,8 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
         return panel;
     }
 
-    protected JTextField createTextField(int columns) {
-        return new JTextField(columns);
+    protected JTextField createTextField() {
+        return new JTextField(20);
     }
 
     protected JComboBox<String> createComboBox(String[] items) {
@@ -105,12 +103,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     protected JCheckBox createCheckBox(String text) {
         return new JCheckBox(text);
-    }
-
-    protected void addSettingsPanel(String title, JPanel panel, GridBagConstraints gbc) {
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        add(panel, gbc);
     }
 
     protected GridBagConstraints createGridBagConstraints() {
@@ -131,11 +123,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
 
     protected abstract void bindSpecificEvents();
 
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-
     public void loadCachedValues() {
         modelComboBox.setSelectedItem(cache.getParameter("model", "nai-diffusion-3"));
         apiKeyField.setText(cache.getParameter("apiKey", ""));
@@ -153,18 +140,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     }
 
     protected abstract void saveSpecificToCache();
-
-    protected void addComponentWithLabel(String labelText, JComponent component, GridBagConstraints gbc, int y) {
-        gbc.gridy = y;
-        gbc.gridx = 0;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0.3;
-        add(new JLabel(labelText), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.7;
-        add(component, gbc);
-    }
 
     protected JButton createHelpButton(String tooltipKey) {
         JButton helpButton = new JButton("?");
@@ -195,32 +170,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
         return browseButton;
     }
 
-    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, GridBagConstraints gbc, int y) {
-        gbc.gridy = y;
-        gbc.gridx = 0;
-        gbc.weightx = 0.0;
-        add(new JLabel(labelText), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        add(component, gbc);
-
-        if (helpButton != null) {
-            gbc.gridx = 2;
-            gbc.weightx = 0.0;
-            add(helpButton, gbc);
-        }
-    }
-
-    protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JComponent browseButton, GridBagConstraints gbc, int y) {
-        addComponentWithLabel(labelText, component, helpButton, gbc, y);
-        if (browseButton != null) {
-            gbc.gridx = 3;
-            gbc.weightx = 0.0;
-            add(browseButton, gbc);
-        }
-    }
-
     JPanel createTitledPanel(String title) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(title));
@@ -228,6 +177,17 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     }
 
     protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JPanel panel) {
+        addComponentWithLabel(labelText, component, panel);
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        if (helpButton != null) {
+            gbc.gridx = 2;
+            gbc.weightx = 0.0;
+            panel.add(helpButton, gbc);
+        }
+    }
+
+    static void addComponentWithLabel(String labelText, JComponent component, JPanel panel) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -240,12 +200,6 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
         gbc.gridx = 1;
         gbc.weightx = 1.0;
         panel.add(component, gbc);
-
-        if (helpButton != null) {
-            gbc.gridx = 2;
-            gbc.weightx = 0.0;
-            panel.add(helpButton, gbc);
-        }
     }
 
     protected void addComponentWithLabel(String labelText, JComponent component, JComponent helpButton, JComponent browseButton, JPanel panel) {

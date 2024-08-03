@@ -22,6 +22,7 @@ public class DocumentPreviewPanel extends JPanel {
         themeSelector = new JComboBox<>(SyntaxHighlightTextArea.getAvailableThemes());
         themeSelector.addActionListener(e -> {
             SyntaxHighlightTextArea.Theme selectedTheme = (SyntaxHighlightTextArea.Theme) themeSelector.getSelectedItem();
+            assert selectedTheme != null;
             syntaxHighlightTextArea.applyTheme(selectedTheme);
         });
 

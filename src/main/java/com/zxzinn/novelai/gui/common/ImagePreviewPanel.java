@@ -83,11 +83,6 @@ public class ImagePreviewPanel extends JPanel implements UIComponent, MouseWheel
         }
     }
 
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-
     public void setImage(BufferedImage image) {
         this.image = image;
         resetView();

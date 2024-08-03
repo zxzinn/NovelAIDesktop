@@ -1,7 +1,6 @@
 package com.zxzinn.novelai.api;
 
 import com.zxzinn.novelai.gui.generation.AbstractParametersPanel;
-import com.zxzinn.novelai.gui.generation.PromptPanel;
 
 import java.util.Map;
 

@@ -21,21 +21,15 @@ public class GenerationParametersPanel extends AbstractParametersPanel {
 
     @Override
     protected void initSpecificComponents() {
-        widthField = createTextField(20);
-        heightField = createTextField(20);
-        scaleField = createTextField(20);
+        widthField = createTextField();
+        heightField = createTextField();
+        scaleField = createTextField();
         samplerComboBox = createComboBox(NAIConstants.SAMPLERS);
-        stepsField = createTextField(20);
-        seedField = createTextField(20);
-        nSamplesField = createTextField(20);
+        stepsField = createTextField();
+        seedField = createTextField();
+        nSamplesField = createTextField();
         smeaCheckbox = createCheckBox("SMEA");
         smeaDynCheckbox = createCheckBox("SMEA DYN");
-    }
-
-    @Override
-    protected void layoutSpecificComponents(GridBagConstraints gbc) {
-        addSettingsPanel("Image Settings", createImageSettingsPanel(), gbc);
-        addSettingsPanel("Sampling Settings", createSamplingSettingsPanel(), gbc);
     }
 
     @Override
@@ -76,19 +70,8 @@ public class GenerationParametersPanel extends AbstractParametersPanel {
         return panel;
     }
 
-    private void addComponentWithLabel(String labelText, JComponent component, JPanel panel) {
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.WEST;
-
-        gbc.gridx = 0;
-        gbc.weightx = 0.0;
-        panel.add(new JLabel(labelText), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        panel.add(component, gbc);
+    public static void addComponentWithLabel(String labelText, JComponent component, JPanel panel) {
+        Img2ImgParametersPanel.addComponentWithLabel(labelText, component, panel);
     }
 
     @Override

@@ -25,6 +25,7 @@ public class GenerationControlPanel extends JPanel {
 
         generateButton.addActionListener(e -> {
             String countSelection = (String) generationCountComboBox.getSelectedItem();
+            assert countSelection != null;
             int count = countSelection.equals(I18nManager.getString("option.infinite")) ? Integer.MAX_VALUE : Integer.parseInt(countSelection);
             onGenerate.accept(count);
         });

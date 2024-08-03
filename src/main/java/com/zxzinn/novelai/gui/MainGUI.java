@@ -129,11 +129,6 @@ public class MainGUI extends JFrame implements UIComponent {
         actionComboBox.addActionListener(e -> updateParametersPanel());
     }
 
-    @Override
-    public JComponent getComponent() {
-        return (JComponent) getContentPane();
-    }
-
     private void styleActionComboBox() {
         actionComboBox.setFont(new Font(actionComboBox.getFont().getName(), Font.BOLD, 16));
         actionComboBox.setBackground(new Color(70, 130, 180));
@@ -268,13 +263,5 @@ public class MainGUI extends JFrame implements UIComponent {
         SwingUtilities.invokeLater(() -> {
             generationControlPanel.updateState(isGenerating);
         });
-    }
-
-    public void loadCachedValues() {
-        currentParametersPanel.loadCachedValues();
-    }
-
-    public void saveToCache() {
-        currentParametersPanel.saveToCache();
     }
 }

@@ -70,9 +70,4 @@ public class FileManagerControlPanel extends JPanel implements UIComponent {
         clearMetadataButton.addActionListener(e -> fileManagerTab.clearMetadata());
         constructDatabaseButton.addActionListener(e -> fileManagerTab.constructDatabase());
     }
-
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
 }

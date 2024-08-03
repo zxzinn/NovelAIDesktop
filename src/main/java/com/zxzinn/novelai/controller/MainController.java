@@ -35,24 +35,6 @@ public class MainController {
         });
     }
 
-    public void toggleGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
-        if (imageGenerator.isGenerating()) {
-            stopGeneration();
-        } else {
-            startGeneration(request, apiKey, count, outputDir);
-        }
-    }
-
-    private void startGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
-        mainGUI.updateGenerationControlPanel(true);
-        imageGenerator.toggleGeneration(request, apiKey, count, outputDir);
-    }
-
-    private void stopGeneration() {
-        mainGUI.updateGenerationControlPanel(false);
-        imageGenerator.requestStop();
-    }
-
     private void handleGeneratedImage(BufferedImage image) {
         mainGUI.handleGeneratedImage(image);
     }

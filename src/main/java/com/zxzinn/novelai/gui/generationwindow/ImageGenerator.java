@@ -142,8 +142,4 @@ public class ImageGenerator {
     public boolean isGenerating() {
         return isGenerating.get();
     }
-
-    public void shutdown() {
-        generationService.shutdown();
-    }
 }

@@ -82,11 +82,6 @@ public class FileManagerTab extends JPanel implements UIComponent {
         });
     }
 
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-
     private void loadWatchedFolders() {
         Set<String> foldersToWatch = new HashSet<>();
 
@@ -160,7 +155,7 @@ public class FileManagerTab extends JPanel implements UIComponent {
                                 I18nManager.getString("fileManager.unprocessedFiles") + ": " + unprocessedFileNames);
             }
             if (selectedFiles.size() == 1) {
-                metadataDisplayPanel.displayMetadata(selectedFiles.get(0));
+                metadataDisplayPanel.displayMetadata(selectedFiles.getFirst());
             }
         } else {
             JOptionPane.showMessageDialog(this, I18nManager.getString("fileManager.noFilesSelected"));

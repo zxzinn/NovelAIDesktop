@@ -151,38 +151,9 @@ public class PromptPanel extends JPanel implements UIComponent {
         updateTimer.restart();
     }
 
-    public CompletableFuture<Void> updatePreviewsForGeneration() {
-        if (!isLocked) {
-            return CompletableFuture.runAsync(() -> {
-                String positivePreview = previewManager.processPrompt(positivePromptArea.getText());
-                String negativePreview = previewManager.processPrompt(negativePromptArea.getText());
-
-                SwingUtilities.invokeLater(() -> {
-                    positivePreviewArea.setText(positivePreview);
-                    negativePreviewArea.setText(negativePreview);
-                });
-            });
-        }
-        return CompletableFuture.completedFuture(null);
-    }
-
     private void updatePreviews() {
         previewManager.updatePreview(true, positivePromptArea.getText());
         previewManager.updatePreview(false, negativePromptArea.getText());
-    }
-
-
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-
-    public String getPositivePrompt() {
-        return positivePreviewArea.getText();
-    }
-
-    public String getNegativePrompt() {
-        return negativePreviewArea.getText();
     }
 
     private void loadCachedPrompts() {

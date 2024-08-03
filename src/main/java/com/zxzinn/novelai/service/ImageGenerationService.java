@@ -49,8 +49,4 @@ public class ImageGenerationService {
             }
         }, executorService);
     }
-
-    public void shutdown() {
-        executorService.shutdownNow();
-    }
 }

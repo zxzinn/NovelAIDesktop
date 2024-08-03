@@ -48,11 +48,6 @@ public class HistoryPanel extends JPanel implements UIComponent {
         // No specific events to bind in this panel
     }
 
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-
     public void addImage(BufferedImage image) {
         if (!addedImages.contains(image)) {
             log.debug("Adding new image to HistoryPanel");
