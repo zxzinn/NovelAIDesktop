@@ -2,6 +2,7 @@
   "main.title": "AI 圖像生成器",
   "button.generate": "生成",
   "button.stop": "停止",
+  "button.stopping": "正在停止...",
   "prompt.positive": "正面提示詞:",
   "prompt.negative": "負面提示詞:",
   "param.apiKey": "API Key",

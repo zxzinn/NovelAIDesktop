@@ -15,25 +15,24 @@ import java.awt.event.ComponentEvent;
 import java.util.concurrent.CompletableFuture;
 
 @Log4j2
+@Getter
 public class PromptPanel extends JPanel implements UIComponent {
     private final PromptProcessor promptProcessor;
     private final Cache cache;
-    @Getter
     private final PromptPreviewManager previewManager;
 
     private JTextArea positivePromptArea;
     private JTextArea negativePromptArea;
     private JTextArea positivePreviewArea;
     private JTextArea negativePreviewArea;
+
     private JButton refreshButton;
     private JToggleButton lockButton;
     private JPanel promptContainer;
 
     private Timer updateTimer;
 
-    @Getter
     private boolean isLocked = false;
-    private boolean isFirstGeneration = true;
 
     public PromptPanel() {
         this.promptProcessor = new EmbedPromptProcessor();
@@ -169,23 +168,19 @@ public class PromptPanel extends JPanel implements UIComponent {
     }
 
     public CompletableFuture<PromptResult> preparePromptForGeneration() {
-        if (isLocked) {
-            return CompletableFuture.completedFuture(new PromptResult(positivePreviewArea.getText(), negativePreviewArea.getText()));
-        } else {
-            return reprocessEmbed();
-        }
+        return CompletableFuture.supplyAsync(() -> {
+            String positivePrompt = positivePreviewArea.getText();
+            String negativePrompt = negativePreviewArea.getText();
+            return new PromptResult(positivePrompt, negativePrompt);
+        });
     }
 
-    private CompletableFuture<PromptResult> reprocessEmbed() {
+    public CompletableFuture<PromptResult> reprocessEmbed() {
         return CompletableFuture.supplyAsync(() -> {
             String positivePreview = previewManager.processPrompt(positivePromptArea.getText());
             String negativePreview = previewManager.processPrompt(negativePromptArea.getText());
             return new PromptResult(positivePreview, negativePreview);
         });
-    }
-
-    public void resetFirstGeneration() {
-        isFirstGeneration = true;
     }
 
     public void updatePreviewAreas(String positivePreview, String negativePreview) {

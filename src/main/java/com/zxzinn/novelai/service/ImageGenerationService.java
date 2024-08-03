@@ -30,11 +30,13 @@ public class ImageGenerationService {
     public CompletableFuture<BufferedImage> generateImage(GenerationRequest request, String apiKey) {
         return CompletableFuture.supplyAsync(() -> {
             try {
+                log.info("Sending API request for image generation");
                 apiService.setApiKey(apiKey);
                 byte[] response = apiService.sendRequest(request);
+                log.info("Received API response, extracting image");
                 return imageProcessor.extractImageFromZip(response);
             } catch (IOException | InterruptedException e) {
-                log.error("Error generating image: {}", e.getMessage());
+                log.error("Error generating image: {}", e.getMessage(), e);
                 throw new RuntimeException("Image generation failed", e);
             }
         }, executorService);
