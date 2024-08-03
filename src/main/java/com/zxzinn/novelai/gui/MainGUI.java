@@ -182,7 +182,8 @@ public class MainGUI extends JFrame implements UIComponent {
             public void windowClosing(WindowEvent e) {
                 saveAllCache();
                 fileManagerTab.shutdownFileWatcher();
-                log.info("Application closing, cache saved and FileWatcher shutdown");
+                promptPanel.getPreviewManager().shutdown();  // 關閉PromptPreviewManager
+                log.info("Application closing, cache saved, FileWatcher and PromptPreviewManager shutdown");
             }
         });
     }
@@ -218,18 +219,49 @@ public class MainGUI extends JFrame implements UIComponent {
         });
     }
 
-    public GenerationRequest buildRequest() {
-        String action = (String) actionComboBox.getSelectedItem();
-        String positivePrompt = promptPanel.getPositivePrompt();
-        String negativePrompt = promptPanel.getNegativePrompt();
-        return GenerationRequestBuilder.buildRequest(action, positivePrompt, negativePrompt, currentParametersPanel);
+    private void onGenerate(int count) {
+        generateImages(count);
     }
 
-    private void onGenerate(int count) {
-        GenerationRequest request = buildRequest();
-        String apiKey = currentParametersPanel.getApiKeyField().getText();
-        String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
-        controller.toggleGeneration(request, apiKey, count, outputDir);
+    private void generateImages(int totalCount) {
+        generateImage(totalCount, 0);
+    }
+
+    private void generateImage(final int totalCount, final int currentCount) {
+        // 每次生成之前都重新處理 Embed
+        promptPanel.resetFirstGeneration();
+        promptPanel.preparePromptForGeneration().thenAccept(promptResult -> {
+            SwingUtilities.invokeLater(() -> {
+                // 更新提示詞預覽
+                promptPanel.updatePreviewAreas(promptResult.positivePrompt, promptResult.negativePrompt);
+
+                GenerationRequest request = buildRequest(promptResult);
+                String apiKey = currentParametersPanel.getApiKeyField().getText();
+                String outputDir = currentParametersPanel.getOutputDirField().getText().trim();
+
+                // 更新生成控制面板狀態
+                updateGenerationControlPanel(true);
+
+                controller.generateImage(request, apiKey, outputDir, image -> {
+                    handleGeneratedImage(image);
+                    continueGeneration(totalCount, currentCount + 1);
+                });
+            });
+        });
+    }
+
+    private void continueGeneration(int totalCount, int nextCount) {
+        if (nextCount < totalCount) {
+            generateImage(totalCount, nextCount);
+        } else {
+            // 生成完成，更新控制面板狀態
+            updateGenerationControlPanel(false);
+        }
+    }
+
+    private GenerationRequest buildRequest(PromptPanel.PromptResult promptResult) {
+        String action = (String) actionComboBox.getSelectedItem();
+        return GenerationRequestBuilder.buildRequest(action, promptResult.positivePrompt, promptResult.negativePrompt, currentParametersPanel);
     }
 
     public void updateGenerationControlPanel(boolean isGenerating) {

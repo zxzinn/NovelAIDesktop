@@ -7,6 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Log4j2
 public class HistoryPanel extends JPanel implements UIComponent {
@@ -14,10 +16,12 @@ public class HistoryPanel extends JPanel implements UIComponent {
     private final ImagePreviewPanel imagePreviewPanel;
     private static final int THUMBNAIL_WIDTH = 100;
     private static final int PANEL_WIDTH = 120;
+    private final Set<BufferedImage> addedImages;
 
     public HistoryPanel(ImagePreviewPanel imagePreviewPanel) {
         this.imagePreviewPanel = imagePreviewPanel;
         thumbnailPanel = new JPanel();
+        addedImages = new LinkedHashSet<>();
 
         initializeComponents();
         layoutComponents();
@@ -50,20 +54,25 @@ public class HistoryPanel extends JPanel implements UIComponent {
     }
 
     public void addImage(BufferedImage image) {
-        log.debug("Adding image to HistoryPanel");
-        ImageIcon thumbnail = createThumbnail(image);
-        JButton button = new JButton(thumbnail);
-        button.setAlignmentX(Component.CENTER_ALIGNMENT);
-        button.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        button.setContentAreaFilled(false);
-        button.addActionListener(e -> {
-            imagePreviewPanel.setImage(image);
-            imagePreviewPanel.fitToPanel();
-        });
-        thumbnailPanel.add(button);
-        thumbnailPanel.revalidate();
-        thumbnailPanel.repaint();
-        log.debug("Image added to HistoryPanel successfully");
+        if (!addedImages.contains(image)) {
+            log.debug("Adding new image to HistoryPanel");
+            ImageIcon thumbnail = createThumbnail(image);
+            JButton button = new JButton(thumbnail);
+            button.setAlignmentX(Component.CENTER_ALIGNMENT);
+            button.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+            button.setContentAreaFilled(false);
+            button.addActionListener(e -> {
+                imagePreviewPanel.setImage(image);
+                imagePreviewPanel.fitToPanel();
+            });
+            thumbnailPanel.add(button);
+            thumbnailPanel.revalidate();
+            thumbnailPanel.repaint();
+            addedImages.add(image);
+            log.debug("New image added to HistoryPanel successfully");
+        } else {
+            log.debug("Image already exists in HistoryPanel, skipping");
+        }
     }
 
     private ImageIcon createThumbnail(BufferedImage image) {

@@ -45,6 +45,18 @@ public class ImageGenerator {
         }
     }
 
+    public void generateSingleImage(GenerationRequest request, String apiKey, String outputDir, Consumer<BufferedImage> onImageGenerated) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                BufferedImage image = generationService.generateImage(request, apiKey).join();
+                handleGeneratedImage(image, outputDir);
+                SwingUtilities.invokeLater(() -> onImageGenerated.accept(image));
+            } catch (Exception e) {
+                handleError(I18nManager.getString("error.apiRequest", e.getMessage()));
+            }
+        });
+    }
+
     private void startGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
         if (isGenerating.get()) {
             return;

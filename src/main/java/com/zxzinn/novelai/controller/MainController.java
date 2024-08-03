@@ -6,6 +6,7 @@ import com.zxzinn.novelai.gui.generationwindow.ImageGenerator;
 import lombok.extern.log4j.Log4j2;
 
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 @Log4j2
 public class MainController {
@@ -25,6 +26,13 @@ public class MainController {
                 this::appendToConsole,
                 this::onGenerationStopped
         );
+    }
+
+    public void generateImage(GenerationRequest request, String apiKey, String outputDir, Consumer<BufferedImage> onImageGenerated) {
+        imageGenerator.generateSingleImage(request, apiKey, outputDir, image -> {
+            onImageGenerated.accept(image);
+            mainGUI.updateGenerationControlPanel(false);
+        });
     }
 
     public void toggleGeneration(GenerationRequest request, String apiKey, int count, String outputDir) {
@@ -51,6 +59,7 @@ public class MainController {
 
     private void handleError(String errorMessage) {
         mainGUI.handleError(errorMessage);
+        mainGUI.updateGenerationControlPanel(false);
     }
 
     private void appendToConsole(String message) {
