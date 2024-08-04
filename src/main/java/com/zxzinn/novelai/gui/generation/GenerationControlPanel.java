@@ -1,6 +1,8 @@
 package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.GenerationState;
+import com.zxzinn.novelai.event.ImageReceivedEvent;
+import com.zxzinn.novelai.event.ImageReceivedListener;
 import com.zxzinn.novelai.utils.I18nManager;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -18,6 +22,7 @@ import java.util.function.Consumer;
 public class GenerationControlPanel extends JPanel {
     private final JButton controlButton;
     private final JComboBox<String> generationCountComboBox;
+    private final List<ImageReceivedListener> imageReceivedListeners = new ArrayList<>();
 
     private GenerationState currentState;
     private final AtomicInteger lastingCount = new AtomicInteger();
@@ -102,9 +107,18 @@ public class GenerationControlPanel extends JPanel {
         });
     }
 
+    public void addImageReceivedListener(ImageReceivedListener listener) {
+        imageReceivedListeners.add(listener);
+    }
+
+    public void removeImageReceivedListener(ImageReceivedListener listener) {
+        imageReceivedListeners.remove(listener);
+    }
+
     public void onImageReceived(BufferedImage image) {
-        if (onImageReceived != null) {
-            onImageReceived.accept(image);
+        ImageReceivedEvent event = new ImageReceivedEvent(this, image);
+        for (ImageReceivedListener listener : imageReceivedListeners) {
+            listener.onImageReceived(event);
         }
     }
 }

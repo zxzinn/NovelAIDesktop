@@ -5,6 +5,8 @@ import com.zxzinn.novelai.api.GenerationRequest;
 import com.zxzinn.novelai.api.GenerationRequestBuilder;
 import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.config.ConfigManager;
+import com.zxzinn.novelai.event.ImageReceivedEvent;
+import com.zxzinn.novelai.event.ImageReceivedListener;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
 import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
 import com.zxzinn.novelai.gui.generation.*;
@@ -27,7 +29,7 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 @Getter
 @Setter
-public class MainGUI extends JFrame implements UIComponent {
+public class MainGUI extends JFrame implements UIComponent , ImageReceivedListener {
     private static final ConfigManager config = ConfigManager.getInstance();
     public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
     public static final int WINDOW_HEIGHT = config.getInteger("ui.window.height");
@@ -134,7 +136,7 @@ public class MainGUI extends JFrame implements UIComponent {
     public void bindEvents() {
         actionComboBox.addActionListener(e -> updateParametersPanel());
         generationControlPanel.setOnGenerateRequested(this::startImageGeneration);
-        generationControlPanel.setOnImageReceived(this::onReceivedImage);
+        generationControlPanel.addImageReceivedListener(this);
     }
 
     private void startImageGeneration() {
@@ -205,7 +207,9 @@ public class MainGUI extends JFrame implements UIComponent {
         });
     }
 
-    private void onReceivedImage(BufferedImage image) {
+    @Override
+    public void onImageReceived(ImageReceivedEvent event) {
+        BufferedImage image = event.getImage();
         SwingUtilities.invokeLater(() -> {
             try {
                 imagePreviewPanel.setImage(image);
