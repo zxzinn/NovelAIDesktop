@@ -2,6 +2,8 @@ package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.config.ConfigManager;
+import com.zxzinn.novelai.event.ParameterChangeEvent;
+import com.zxzinn.novelai.event.ParameterChangeListener;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
@@ -9,6 +11,8 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -27,6 +31,8 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     public abstract JTextField getApiKeyField();
     public abstract JTextField getOutputDirField();
     public abstract Map<String, Object> getParameters();
+
+    private final List<ParameterChangeListener> parameterChangeListeners = new ArrayList<>();
 
     public AbstractParametersPanel() {
         setLayout(new GridBagLayout());
@@ -118,7 +124,19 @@ public abstract class AbstractParametersPanel extends JPanel implements UICompon
     @Override
     public void bindEvents() {
         // Common event bindings can be added here
+        modelComboBox.addActionListener(e -> fireParameterChangeEvent(new ParameterChangeEvent(this, "model", modelComboBox.getSelectedItem())));
+
+        apiKeyField.getDocument().addDocumentListener((SimpleDocumentListener) () -> fireParameterChangeEvent(new ParameterChangeEvent(this, "apiKey", apiKeyField.getText())));
+
+        outputDirField.getDocument().addDocumentListener((SimpleDocumentListener) () -> fireParameterChangeEvent(new ParameterChangeEvent(this, "outputDir", outputDirField.getText())));
+
         bindSpecificEvents();
+    }
+
+    protected void fireParameterChangeEvent(ParameterChangeEvent event) {
+        for (ParameterChangeListener listener : parameterChangeListeners) {
+            listener.onParameterChange(event);
+        }
     }
 
     protected abstract void bindSpecificEvents();

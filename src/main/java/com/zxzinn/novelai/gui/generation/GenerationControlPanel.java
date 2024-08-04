@@ -1,6 +1,8 @@
 package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.GenerationState;
+import com.zxzinn.novelai.event.GenerationStateChangeEvent;
+import com.zxzinn.novelai.event.GenerationStateChangeListener;
 import com.zxzinn.novelai.event.ImageReceivedEvent;
 import com.zxzinn.novelai.event.ImageReceivedListener;
 import com.zxzinn.novelai.utils.I18nManager;
@@ -23,6 +25,7 @@ public class GenerationControlPanel extends JPanel {
     private final JButton controlButton;
     private final JComboBox<String> generationCountComboBox;
     private final List<ImageReceivedListener> imageReceivedListeners = new ArrayList<>();
+    private final List<GenerationStateChangeListener> generationStateChangeListeners = new ArrayList<>();
 
     private GenerationState currentState;
     private final AtomicInteger lastingCount = new AtomicInteger();
@@ -57,10 +60,6 @@ public class GenerationControlPanel extends JPanel {
                 // 停止狀態下不執行操作
                 break;
         }
-    }
-
-    public boolean shouldContinueGenerating() {
-        return currentState == GenerationState.GENERATING && lastingCount.get() > 0;
     }
 
     public boolean decrementLastingCount() {
@@ -104,6 +103,7 @@ public class GenerationControlPanel extends JPanel {
                     controlButton.setEnabled(false);
                     break;
             }
+            fireGenerationStateChangeEvent(new GenerationStateChangeEvent(this, newState));
         });
     }
 
@@ -111,14 +111,19 @@ public class GenerationControlPanel extends JPanel {
         imageReceivedListeners.add(listener);
     }
 
-    public void removeImageReceivedListener(ImageReceivedListener listener) {
-        imageReceivedListeners.remove(listener);
-    }
-
     public void onImageReceived(BufferedImage image) {
         ImageReceivedEvent event = new ImageReceivedEvent(this, image);
         for (ImageReceivedListener listener : imageReceivedListeners) {
             listener.onImageReceived(event);
         }
+    }
+
+    private void fireGenerationStateChangeEvent(GenerationStateChangeEvent event) {
+        for (GenerationStateChangeListener listener : generationStateChangeListeners) {
+            listener.onGenerationStateChange(event);
+        }
+    }
+
+    public void setLastingCount(int count) {
     }
 }

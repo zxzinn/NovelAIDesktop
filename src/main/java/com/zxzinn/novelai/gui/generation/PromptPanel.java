@@ -1,5 +1,7 @@
 package com.zxzinn.novelai.gui.generation;
 
+import com.zxzinn.novelai.event.PromptUpdateEvent;
+import com.zxzinn.novelai.event.PromptUpdateListener;
 import com.zxzinn.novelai.generation.prompt.PromptProcessor;
 import com.zxzinn.novelai.generation.prompt.EmbedPromptProcessor;
 import com.zxzinn.novelai.utils.Cache;
@@ -12,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Log4j2
@@ -33,6 +37,8 @@ public class PromptPanel extends JPanel implements UIComponent {
     private Timer updateTimer;
 
     private boolean isLocked = false;
+
+    private final List<PromptUpdateListener> promptUpdateListeners = new ArrayList<>();
 
     public PromptPanel() {
         this.promptProcessor = new EmbedPromptProcessor();
@@ -150,9 +156,22 @@ public class PromptPanel extends JPanel implements UIComponent {
         updateTimer.restart();
     }
 
+    public void addPromptUpdateListener(PromptUpdateListener listener) {
+        promptUpdateListeners.add(listener);
+    }
+
+    private void firePromptUpdateEvent(PromptUpdateEvent event) {
+        for (PromptUpdateListener listener : promptUpdateListeners) {
+            listener.onPromptUpdate(event);
+        }
+    }
+
     private void updatePreviews() {
-        previewManager.updatePreview(true, positivePromptArea.getText());
-        previewManager.updatePreview(false, negativePromptArea.getText());
+        String positivePrompt = positivePromptArea.getText();
+        String negativePrompt = negativePromptArea.getText();
+        previewManager.updatePreview(true, positivePrompt);
+        previewManager.updatePreview(false, negativePrompt);
+        firePromptUpdateEvent(new PromptUpdateEvent(this, positivePrompt, negativePrompt));
     }
 
     private void loadCachedPrompts() {

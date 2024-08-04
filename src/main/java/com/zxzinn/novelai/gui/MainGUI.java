@@ -7,6 +7,8 @@ import com.zxzinn.novelai.api.NAIConstants;
 import com.zxzinn.novelai.config.ConfigManager;
 import com.zxzinn.novelai.event.ImageReceivedEvent;
 import com.zxzinn.novelai.event.ImageReceivedListener;
+import com.zxzinn.novelai.event.PromptUpdateEvent;
+import com.zxzinn.novelai.event.PromptUpdateListener;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
 import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
 import com.zxzinn.novelai.gui.generation.*;
@@ -29,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 @Getter
 @Setter
-public class MainGUI extends JFrame implements UIComponent , ImageReceivedListener {
+public class MainGUI extends JFrame implements UIComponent , ImageReceivedListener , PromptUpdateListener {
     private static final ConfigManager config = ConfigManager.getInstance();
     public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
     public static final int WINDOW_HEIGHT = config.getInteger("ui.window.height");
@@ -83,6 +85,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         mainTabbedPane = new JTabbedPane();
 
         promptPanel = new PromptPanel();
+        promptPanel.addPromptUpdateListener(this);
 
         generationParametersPanel = new GenerationParametersPanel();
         img2ImgParametersPanel = new Img2ImgParametersPanel();
@@ -141,7 +144,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
 
     private void startImageGeneration() {
         if (isGenerating) {
-            log.info("已經在生成圖像中，忽略新的請求");
+            log.info("已經在生成圖像中,忽略新的請求");
             return;
         }
 
@@ -151,6 +154,10 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         CompletableFuture.runAsync(() -> {
             try {
                 currentPromptResult = promptPanel.preparePromptForGeneration().get();
+                String countSelection = (String) generationControlPanel.getGenerationCountComboBox().getSelectedItem();
+                assert countSelection != null;
+                int count = countSelection.equals(I18nManager.getString("option.infinite")) ? Integer.MAX_VALUE : Integer.parseInt(countSelection);
+                generationControlPanel.setLastingCount(count);
                 generateNextImage();
             } catch (Exception e) {
                 log.error("準備提示詞時出錯", e);
@@ -162,9 +169,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
     }
 
     private void generateNextImage() {
-        if (!generationControlPanel.shouldContinueGenerating() || !isGenerating) {
-            isGenerating = false;
-            generationControlPanel.updateState(GenerationState.IDLE);
+        if (!isGenerating) {
             return;
         }
 
@@ -198,9 +203,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         CompletableFuture.runAsync(() -> {
             try {
                 PromptPanel.PromptResult nextPromptResult = promptPanel.reprocessEmbed().get();
-                SwingUtilities.invokeLater(() -> {
-                    promptPanel.updatePreviewAreas(nextPromptResult.positivePrompt, nextPromptResult.negativePrompt);
-                });
+                SwingUtilities.invokeLater(() -> promptPanel.updatePreviewAreas(nextPromptResult.positivePrompt, nextPromptResult.negativePrompt));
             } catch (Exception e) {
                 log.error("刷新提示詞預覽時出錯", e);
             }
@@ -241,9 +244,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
 
     private void handleError(String errorMessage) {
         log.error(errorMessage);
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(this, errorMessage, "錯誤", JOptionPane.ERROR_MESSAGE);
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(this, errorMessage, "錯誤", JOptionPane.ERROR_MESSAGE));
     }
 
     private void styleActionComboBox() {
@@ -292,5 +293,10 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         cache.setParameter("action", (String) actionComboBox.getSelectedItem());
         cache.saveCache();
         log.info("Cache saved");
+    }
+
+    @Override
+    public void onPromptUpdate(PromptUpdateEvent event) {
+        currentPromptResult = new PromptPanel.PromptResult(event.getPositivePrompt(), event.getNegativePrompt());
     }
 }
