@@ -3,7 +3,6 @@ package com.zxzinn.novelai.event;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.EventListener;
 import java.util.EventObject;
 
 @Getter

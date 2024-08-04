@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j2
+@SuppressWarnings("unchecked")
 public class TagGroupProcessor {
     private final Map<String, Object> group;
     private final Random random;

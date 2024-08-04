@@ -1,45 +1,33 @@
-package com.zxzinn.novelai.gui;
+package com.zxzinn.novelai.gui.generation;
 
 import com.zxzinn.novelai.GenerationState;
 import com.zxzinn.novelai.api.GenerationRequest;
 import com.zxzinn.novelai.api.GenerationRequestBuilder;
 import com.zxzinn.novelai.api.NAIConstants;
-import com.zxzinn.novelai.config.ConfigManager;
 import com.zxzinn.novelai.event.ImageReceivedEvent;
 import com.zxzinn.novelai.event.ImageReceivedListener;
 import com.zxzinn.novelai.event.PromptUpdateEvent;
 import com.zxzinn.novelai.event.PromptUpdateListener;
 import com.zxzinn.novelai.gui.common.ImagePreviewPanel;
-import com.zxzinn.novelai.gui.filewindow.FileManagerTab;
-import com.zxzinn.novelai.gui.generation.*;
 import com.zxzinn.novelai.service.ImageGenerationService;
 import com.zxzinn.novelai.utils.Cache;
 import com.zxzinn.novelai.utils.I18nManager;
 import com.zxzinn.novelai.utils.UIComponent;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CompletableFuture;
 
 @Log4j2
 @Getter
-@Setter
-public class MainGUI extends JFrame implements UIComponent , ImageReceivedListener , PromptUpdateListener {
-    private static final ConfigManager config = ConfigManager.getInstance();
-    public static final int WINDOW_WIDTH = config.getInteger("ui.window.width");
-    public static final int WINDOW_HEIGHT = config.getInteger("ui.window.height");
-
+public class GenerationGUI extends JPanel implements UIComponent, ImageReceivedListener, PromptUpdateListener {
     private volatile boolean isGenerating = false;
     private final Object generationLock = new Object();
 
-    private JTabbedPane mainTabbedPane;
     private PromptPanel promptPanel;
     private AbstractParametersPanel currentParametersPanel;
     private GenerationParametersPanel generationParametersPanel;
@@ -47,7 +35,6 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
     private ImagePreviewPanel imagePreviewPanel;
     private HistoryPanel historyPanel;
     private GenerationControlPanel generationControlPanel;
-    private FileManagerTab fileManagerTab;
 
     private JPanel leftPanel;
     private JPanel parameterPanel;
@@ -56,34 +43,22 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
     private JComboBox<String> actionComboBox;
 
     private final Cache cache;
-
     private final ImageGenerationService imageGenerationService;
-
     private PromptPanel.PromptResult currentPromptResult;
 
-    public MainGUI() {
+    public GenerationGUI() {
         this.cache = Cache.getInstance();
-
-        setTitle(config.getString("application.name") + " v" + config.getString("application.version"));
-        setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        setLocationRelativeTo(null);
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        imageGenerationService = new ImageGenerationService();
+        this.imageGenerationService = new ImageGenerationService();
 
         initializeComponents();
         layoutComponents();
         bindEvents();
-        setupWindowListener();
 
-        log.info("MainGUI initialized");
+        log.info("GenerationGUI initialized");
     }
 
     @Override
     public void initializeComponents() {
-        mainTabbedPane = new JTabbedPane();
-
         promptPanel = new PromptPanel();
         promptPanel.addPromptUpdateListener(this);
 
@@ -95,8 +70,6 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         historyPanel = new HistoryPanel(imagePreviewPanel);
 
         generationControlPanel = new GenerationControlPanel();
-
-        fileManagerTab = new FileManagerTab();
 
         leftPanel = new JPanel(new BorderLayout());
         parameterPanel = new JPanel(new BorderLayout());
@@ -125,14 +98,8 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         generatorPanel.add(new JScrollPane(imagePreviewPanel), BorderLayout.CENTER);
         generatorPanel.add(historyPanel, BorderLayout.EAST);
 
-        JPanel mainGeneratorPanel = new JPanel(new BorderLayout());
-        mainGeneratorPanel.add(generatorPanel, BorderLayout.CENTER);
-        mainGeneratorPanel.add(leftPanel, BorderLayout.WEST);
-
-        mainTabbedPane.addTab(I18nManager.getString("tab.generator"), mainGeneratorPanel);
-        mainTabbedPane.addTab(I18nManager.getString("tab.fileManager"), fileManagerTab);
-
-        add(mainTabbedPane, BorderLayout.CENTER);
+        add(generatorPanel, BorderLayout.CENTER);
+        add(leftPanel, BorderLayout.WEST);
     }
 
     @Override
@@ -144,7 +111,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
 
     private void startImageGeneration() {
         if (isGenerating) {
-            log.info("已經在生成圖像中,忽略新的請求");
+            log.info("已經在生成圖像中，忽略新的請求");
             return;
         }
 
@@ -224,7 +191,7 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
                 imageGenerationService.saveImage(image, outputDir);
 
                 log.info("圖像處理完成");
-                if (!promptPanel.isLocked()){
+                if (!promptPanel.isLocked()) {
                     refreshPromptPreview();
                 }
 
@@ -273,26 +240,17 @@ public class MainGUI extends JFrame implements UIComponent , ImageReceivedListen
         repaint();
     }
 
-    private void setupWindowListener() {
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                log.info("Application closing");
-                saveAllCache();
-                fileManagerTab.shutdownFileWatcher();
-                promptPanel.getPreviewManager().shutdown();
-                log.info("Application closed");
-            }
-        });
-    }
-
-    private void saveAllCache() {
+    public void saveAllCache() {
         promptPanel.saveToCache();
         currentParametersPanel.saveToCache();
-        fileManagerTab.saveWatchedFolders();
         cache.setParameter("action", (String) actionComboBox.getSelectedItem());
         cache.saveCache();
-        log.info("Cache saved");
+        log.info("Generation GUI cache saved");
+    }
+
+    public void shutdown() {
+        promptPanel.getPreviewManager().shutdown();
+        log.info("Generation GUI shutdown completed");
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.zxzinn.novelai.event;
 import lombok.Getter;
 
 import java.awt.image.BufferedImage;
-import java.util.EventListener;
 import java.util.EventObject;
 
 @Getter

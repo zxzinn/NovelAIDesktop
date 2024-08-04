@@ -1,7 +1,7 @@
 package com.zxzinn.novelai;
 
 import com.zxzinn.novelai.config.ConfigManager;
-import com.zxzinn.novelai.gui.MainGUI;
+import com.zxzinn.novelai.gui.ContainerGUI;
 import lombok.extern.log4j.Log4j2;
 
 import javax.swing.*;
@@ -9,11 +9,11 @@ import javax.swing.*;
 @Log4j2
 public class Application {
     private final ConfigManager config;
-    private final MainGUI mainGUI;
+    private final ContainerGUI containerGUI;
 
     public Application() {
         config = ConfigManager.getInstance();
-        mainGUI = new MainGUI();
+        containerGUI = new ContainerGUI();
     }
 
     public void start() {
@@ -21,10 +21,10 @@ public class Application {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e) {
-                log.error("Error setting Look and Feel", e);
+                log.error("設置外觀和感覺時出錯", e);
             }
-            mainGUI.setVisible(true);
-            log.info("Application started");
+            containerGUI.setVisible(true);
+            log.info("應用程序已啟動");
         });
     }
 

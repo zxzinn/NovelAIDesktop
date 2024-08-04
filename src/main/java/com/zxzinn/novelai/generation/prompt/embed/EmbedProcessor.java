@@ -29,6 +29,7 @@ public class EmbedProcessor {
         return finalResult;
     }
 
+    @SuppressWarnings("unchecked")
     private String processEmbeds(String input) {
         List<EmbedDetector.EmbedTag> embeds = embedDetector.detectEmbeds(input);
         StringBuilder result = new StringBuilder(input);

@@ -2,7 +2,6 @@ package com.zxzinn.novelai.event;
 
 import lombok.Getter;
 
-import java.util.EventListener;
 import java.util.EventObject;
 
 @Getter
